@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transportes_everest_mobile/screens/vale.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,8 +11,51 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = ColorScheme(
+      // Definir colores primarios y secundarios
+      primary: Colors.black54, // Color para los botones y el icono.
+      primaryContainer: Colors.blue.shade700,
+      secondary: Colors.green,
+      secondaryContainer: Colors.green.shade700,
+      // Definir colores para diferentes partes de la interfaz de usuario
+      surface: Colors.white,
+      background: Colors.white,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.black,
+      onSurface: Colors.black,
+      onBackground: Colors.black,
+      onError: Colors.white,
+      // Opcional: definir un brillo para los colores claros y oscuros
+      brightness: Brightness.light,
+    );
+
+    TextTheme textTheme = const TextTheme(
+      // Definir estilos de texto para diferentes encabezados
+      displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      displaySmall: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      headlineLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      headlineSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold), // Estilo del titulo del AppBar
+      // Definir estilos de texto para el cuerpo de texto
+      bodyLarge: TextStyle(fontSize: 12), // Estilo de los input
+      bodyMedium: TextStyle(fontSize: 10),
+      // Otros estilos de texto
+      titleMedium: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+      titleSmall: TextStyle(fontSize: 12, color: Colors.grey),
+      // Estilo de texto para botones
+      labelLarge: TextStyle(
+          fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+    );
+
+    InputDecorationTheme inputDecorationTheme = const InputDecorationTheme(
+        labelStyle: TextStyle(fontSize: 12.0, color: Colors.blueGrey));
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Transportes Everest',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +72,23 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+
+        dropdownMenuTheme:
+            DropdownMenuThemeData(inputDecorationTheme: inputDecorationTheme),
+        inputDecorationTheme: inputDecorationTheme,
+
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Transportes Everest'),
+      initialRoute: '/vale',
+      routes: {
+        '/vale': (context) => const Vale(),
+        // '/details': (context) => DetailsScreen(),
+      },
+      // Pantalla inicial
     );
   }
 }
