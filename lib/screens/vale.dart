@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:location/location.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/viaje_controller.dart';
+import 'package:transportes_everest_mobile/entidades/ubicacion.dart';
 import 'package:transportes_everest_mobile/entidades/viaje.dart';
 import 'package:transportes_everest_mobile/entidades/viajes_pendientes/viajes_pendientes.dart';
+
+import '../entidades/enlace_request.dart';
 
 class Vale extends StatefulWidget {
   const Vale({super.key});
@@ -17,6 +20,7 @@ class _ValeState extends State<Vale> {
   ViajesPendientes viajesPendientes = ViajesPendientes();
   ViajesPendientes viajesEnCurso = ViajesPendientes();
   ViajesPendientes viajesPorFirmar = ViajesPendientes();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -46,96 +50,20 @@ class _ValeState extends State<Vale> {
                 Tab(text: 'Por firmar')
               ],
             ),
-            body: TabBarView(
-              children: [
-                ListView.builder(
-                  itemCount: viajesPendientes.payload?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                        title: Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text(
-                              getViaje(viajesPendientes, index).cliente?.name ??
-                                  ''),
-                          const SizedBox(width: 8),
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.time_to_leave),
-                            label: const Text("Iniciar"),
-                            onPressed: () {
-                              setEstado(viajesPendientes.payload![index],
-                                  Constants.enProceso);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ));
-                  },
-                ),
-                ListView.builder(
-                  itemCount: viajesEnCurso.payload?.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                        title: Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text(getViaje(viajesEnCurso, index).cliente?.name ??
-                              ''),
-                          const SizedBox(width: 8),
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.stop),
-                            label: const Text("Terminar"),
-                            onPressed: () {
-                              setEstado(viajesPendientes.payload![index],
-                                  Constants.terminado);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ));
-                  },
-                ),
-                ListView.builder(
-                  itemCount: viajesPorFirmar.payload?.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                        title: Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Text(getViaje(viajesPorFirmar, index).cliente?.name ??
-                              ''),
-                          const SizedBox(width: 8),
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.send),
-                            label: const Text("Enviar"),
-                            onPressed: () {
-                              sendSign(viajesPendientes.payload![index]);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ));
-                  },
-                ),
-              ],
+            body: Center(
+              child: isLoading
+                  ? const CircularProgressIndicator()
+                  : TabBarView(children: [
+                      getViajes(viajesPendientes, Constants.pendiente),
+                      getViajes(viajesEnCurso, Constants.enProceso),
+                      getViajes(viajesPorFirmar, Constants.finalizado)
+                    ]),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                cargarInformacion();
+              },
+              child: const Icon(Icons.refresh),
             ),
           ),
         ),
@@ -156,13 +84,108 @@ class _ValeState extends State<Vale> {
     return viaje;
   }
 
+  Column getTexto(Viaje item, bool estado) {
+    Ubicacion ubicacion =
+        viajeController.getUbicacion(item, Constants.pendiente) ?? Ubicacion();
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(
+        item.cliente?.name ?? '',
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+      ),
+      Text("${ubicacion.direccion ?? ''} ${ubicacion.numero}"),
+      Text(ubicacion.comuna?.comuna ?? ''),
+      GestureDetector(
+        onTap: () {
+          // Launch the phone call intent with the phone number
+          viajeController.utils.openPhoneCall(
+              viajeController.utils.phoneFormatted(item.cliente?.phone ?? ''));
+        },
+        child: Text(
+          viajeController.utils.phoneFormatted(item.cliente?.phone ?? ''),
+          style: const TextStyle(
+            decoration: TextDecoration
+                .underline, // Optional: Underline the phone number
+            color: Colors
+                .blue, // Optional: Set a distinct color for the phone number
+          ),
+        ),
+      ),
+      GestureDetector(
+        onTap: () {
+          // Launch the phone call intent with the phone number
+          viajeController.utils.openMaps(
+              ubicacion.direccion ?? '',
+              ubicacion.numero ?? '',
+              ubicacion.comuna?.comuna ?? '',
+              ubicacion.comuna?.region?.region ?? '');
+        },
+        child: Text(
+          "${ubicacion.direccion ?? ''}${ubicacion.numero ?? ''}",
+          style: const TextStyle(
+            decoration: TextDecoration
+                .underline, // Optional: Underline the phone number
+            color: Colors
+                .blue, // Optional: Set a distinct color for the phone number
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  ListView getViajes(ViajesPendientes viajes, String estado) {
+    return ListView.builder(
+      itemCount: viajes.payload?.length ?? 0,
+      itemBuilder: (context, index) {
+        return ListTile(
+            title: Card(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              getTexto(viajes.payload![index], (estado == Constants.pendiente)),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.time_to_leave),
+                label: Text(estado == Constants.pendiente
+                    ? "Iniciar"
+                    : (estado == Constants.enProceso ? "Terminar" : "Firmar")),
+                onPressed: () {
+                  if (estado != Constants.finalizado) {
+                    setEstado(viajes.payload![index], estado);
+                  } else {
+                    sendSign(viajes.payload![index]);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
+      },
+    );
+  }
+
   ///
   /// Propósito: Cambia el estado del viaje según las acciones que define el conductor.
   ///
-  bool setEstado(Viaje item, String estado) {
+  Future<bool?> setEstado(Viaje item, String estado) async {
     try {
       item.estado = estado;
+      LocationData? location = await viajeController.utils.getLocation();
+      if (location != null) {
+        if (estado == Constants.enProceso) {
+          item.origenLatitud = location.latitude.toString();
+          item.origenLongitud = location.longitude.toString();
+        } else {
+          item.destinoLatitud = location.latitude.toString();
+          item.destinoLongitud = location.longitude.toString();
+        }
+      }
       viajeController.updateStatus(item);
+      cargarInformacion();
       return true;
     } on Exception catch (_) {
       viajeController.utils.toastError(_.toString());
@@ -174,15 +197,23 @@ class _ValeState extends State<Vale> {
   ///
   /// Propósito: Enviar notificación al pasajero para que firme el viaje electrónicamente.
   ///
-  void sendSign(Viaje item) {
-    viajeController.createLink(item);
+  void sendSign(Viaje item) async {
+    EnlaceRequest enlace = EnlaceRequest();
+    enlace.estado = "I";
+    enlace.tipo = "V";
+    enlace.idViaje = item.id;
+    bool? estado = await viajeController.createLink(enlace);
+    if ((estado ?? false) == false) {
+      viajeController.utils.toastError(Constants.mensajeCantSendSMS);
+    }
   }
 
   ///
   /// Propósito: Se finaliza el viaje y se envía el SMS para firmar el viaje.
   ///
-  void finishTravel(Viaje item) {
-    if (setEstado(item, Constants.terminado)) {
+  void finishTravel(Viaje item) async {
+    bool? estado = await setEstado(item, Constants.terminado);
+    if (estado ?? false) {
       sendSign(item);
     }
   }
@@ -191,18 +222,25 @@ class _ValeState extends State<Vale> {
   /// Propósito: Realiza las consultas de estado de los viajes que han sido asignados al conductor.
   ///
   void cargarInformacion() async {
-    ViajesPendientes? viajes1 = ViajesPendientes();
-    ViajesPendientes? viajes2 = ViajesPendientes();
-    ViajesPendientes? viajes3 = ViajesPendientes();
+    try {
+      isLoading = true;
+      ViajesPendientes? viajes1 = ViajesPendientes();
+      ViajesPendientes? viajes2 = ViajesPendientes();
+      ViajesPendientes? viajes3 = ViajesPendientes();
 
-    viajes1 = await viajeController.obtenerViajesPendientes();
-    viajes2 = await viajeController.obtenerViajesEnProceso();
-    viajes3 = await viajeController.obtenerViajesPorFirmar();
+      viajes1 = await viajeController.obtenerViajesPendientes();
+      viajes2 = await viajeController.obtenerViajesEnProceso();
+      viajes3 = await viajeController.obtenerViajesPorFirmar();
 
-    setState(() {
-      viajesPendientes = (viajes1 ?? ViajesPendientes());
-      viajesEnCurso = (viajes2 ?? ViajesPendientes());
-      viajesPorFirmar = (viajes3 ?? ViajesPendientes());
-    });
+      setState(() {
+        viajesPendientes = (viajes1 ?? ViajesPendientes());
+        viajesEnCurso = (viajes2 ?? ViajesPendientes());
+        viajesPorFirmar = (viajes3 ?? ViajesPendientes());
+      });
+    } catch (e) {
+      viajeController.utils.toastError(e.toString());
+    } finally {
+      isLoading = false;
+    }
   }
 }

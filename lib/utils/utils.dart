@@ -3,16 +3,20 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:fluttertoast/fluttertoast.dart";
+import "package:geocoding/geocoding.dart";
+import "package:location/location.dart" as location_current;
 import "package:path_provider/path_provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import "package:transportes_everest_mobile/config/constants.dart";
+import "package:url_launcher/url_launcher.dart";
 
 class Utils {
   // late BuildContext _context;
   static const String prefijoBlueExpress = '53300';
+  final location_current.Location location = location_current.Location();
 
   /// Propósito: Método que se ejecuta para cerrar la aplicación por completo.
   /// Autor: Patricio Ramos Castro
@@ -143,17 +147,138 @@ class Utils {
     return directorioDocuments.path;
   }
 
-  void send(List<String> recipents, String msg) async {
+  void send(String phone, String msg) async {
+    List<String> lista = [];
+    lista.add(phone);
+    String? resultado = await sendList(lista, msg);
+    debugPrint(resultado);
+  }
+
+  Future<String?> sendList(List<String> recipents, String msg) async {
+    debugPrint("Enviando SMS...");
     bool canSend = await canSendSMS();
     if (canSend) {
-      String result = await sendSMS(message: msg, recipients: recipents)
-          .catchError((onError) {
+      String result =
+          await sendSMS(message: msg, recipients: recipents, sendDirect: true)
+              .catchError((onError) {
         debugPrint(onError.toString());
         return "${Constants.mensajeErrorSendSMS} : ${onError.toString()}";
       });
-      toastInfo(result);
+      return result;
     } else {
-      toastInfo(Constants.mensajeCantSendSMS);
+      return null;
+    }
+  }
+
+  Future<location_current.LocationData?> getLocation() async {
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        toastError(Constants.mensajeErrorGPSOff);
+        return null;
+      }
+    }
+    location_current.PermissionStatus permissionGranted =
+        await location.hasPermission();
+    if (permissionGranted == location_current.PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != location_current.PermissionStatus.granted) {
+        toastError(Constants.mensajeErrorGPSAccess);
+        return null;
+      }
+    }
+    location_current.LocationData? currentLocation;
+    try {
+      currentLocation = await location.getLocation();
+    } catch (e) {
+      toastError(e.toString());
+    }
+    return currentLocation;
+  }
+
+  Future<bool?> openPhoneCall(String phoneNumber) async {
+    bool estado = false;
+    Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      estado = await launchUrl(launchUri);
+    }
+    return estado;
+  }
+
+  String phoneFormatted(String phoneNumber) {
+    String phone = phoneNumber;
+    if (phone.length < 8) {
+      phone = phone.padLeft(8, "2");
+    }
+    if (phone.length < 9) {
+      phone = phone.padLeft(9, "9");
+    }
+    if (phone.length < 11) {
+      phone = "56$phone";
+    }
+    if (!phoneNumber.startsWith("+")) {
+      phone = "+$phone";
+    }
+    return phone;
+  }
+
+  String getFormattedAddress(
+      String street, String number, String commune, String region) {
+    String destine = street.trim();
+    if (number.isNotEmpty) {
+      if (destine.isNotEmpty) {
+        destine += " ";
+      }
+      destine += number.trim();
+    }
+    if (commune.isNotEmpty) {
+      if (destine.isNotEmpty) {
+        destine += ", ";
+      }
+      destine += commune.trim();
+    }
+    if (region.isNotEmpty) {
+      if (destine.isNotEmpty) {
+        destine += ", ";
+      }
+      destine += region.trim();
+    }
+    return destine;
+  }
+
+  Future<bool?> openMaps(
+      String street, String number, String commune, String region) async {
+    bool estado = false;
+    String address = getFormattedAddress(street, number, commune, region);
+    Uri googleMapsUri = Uri(
+      scheme: 'https',
+      host: 'www.google.com',
+      path: '/maps/dir/?api=1',
+      queryParameters: {
+        'destination': address,
+        'travelmode': Constants.travelModeDriving
+      },
+    );
+
+    if (await canLaunchUrl(googleMapsUri)) {
+      estado = await launchUrl(googleMapsUri);
+    }
+    return estado;
+  }
+
+  Future<Location?> obtenerCoordenadas(
+      String street, String number, String commune, String region) async {
+    String address = getFormattedAddress(street, number, commune, region);
+    List<Location> resultados = await locationFromAddress(address);
+
+    if (resultados.isNotEmpty) {
+      return resultados.first;
+    } else {
+      return null;
     }
   }
 }

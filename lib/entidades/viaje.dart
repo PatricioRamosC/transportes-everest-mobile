@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'usuario.dart';
+import 'ubicacion.dart';
 
 class Viaje {
   int? id;
@@ -19,16 +19,12 @@ class Viaje {
   int? calificacionConductor;
   int? calificacionCliente;
   String? comentarios;
-  String? direccion;
-  String? numero;
-  String? depto;
-  String? referencia;
-  int? idComuna;
   String? estado;
   DateTime? createdAt;
   DateTime? updatedAt;
   Usuario? conductor;
   Usuario? cliente;
+  List<Ubicacion>? ubicaciones;
 
   Viaje({
     this.id,
@@ -47,21 +43,17 @@ class Viaje {
     this.calificacionConductor,
     this.calificacionCliente,
     this.comentarios,
-    this.direccion,
-    this.numero,
-    this.depto,
-    this.referencia,
-    this.idComuna,
     this.estado,
     this.createdAt,
     this.updatedAt,
     this.conductor,
     this.cliente,
+    this.ubicaciones,
   });
 
   @override
   String toString() {
-    return 'Viajes(id: $id, idCliente: $idCliente, idConductor: $idConductor, fechaHoraSolicitud: $fechaHoraSolicitud, fechaHoraInicio: $fechaHoraInicio, fechaHoraFin: $fechaHoraFin, origenLatitud: $origenLatitud, origenLongitud: $origenLongitud, destinoLatitud: $destinoLatitud, destinoLongitud: $destinoLongitud, distancia: $distancia, costoTotal: $costoTotal, metodoPago: $metodoPago, calificacionConductor: $calificacionConductor, calificacionCliente: $calificacionCliente, comentarios: $comentarios, direccion: $direccion, numero: $numero, depto: $depto, referencia: $referencia, idComuna: $idComuna, estado: $estado, createdAt: $createdAt, updatedAt: $updatedAt, conductor: $conductor, cliente: $cliente)';
+    return 'Viaje2(id: $id, idCliente: $idCliente, idConductor: $idConductor, fechaHoraSolicitud: $fechaHoraSolicitud, fechaHoraInicio: $fechaHoraInicio, fechaHoraFin: $fechaHoraFin, origenLatitud: $origenLatitud, origenLongitud: $origenLongitud, destinoLatitud: $destinoLatitud, destinoLongitud: $destinoLongitud, distancia: $distancia, costoTotal: $costoTotal, metodoPago: $metodoPago, calificacionConductor: $calificacionConductor, calificacionCliente: $calificacionCliente, comentarios: $comentarios, estado: $estado, createdAt: $createdAt, updatedAt: $updatedAt, conductor: $conductor, cliente: $cliente, ubicaciones: $ubicaciones)';
   }
 
   factory Viaje.fromMap(Map<String, dynamic> data) => Viaje(
@@ -81,11 +73,6 @@ class Viaje {
         calificacionConductor: data['calificacion_conductor'] as int?,
         calificacionCliente: data['calificacion_cliente'] as int?,
         comentarios: data['comentarios'] as String?,
-        direccion: data['direccion'] as String?,
-        numero: data['numero'] as String?,
-        depto: data['depto'] as String?,
-        referencia: data['referencia'] as String?,
-        idComuna: data['id_comuna'] as int?,
         estado: data['estado'] as String?,
         createdAt: data['created_at'] == null
             ? null
@@ -99,6 +86,9 @@ class Viaje {
         cliente: data['cliente'] == null
             ? null
             : Usuario.fromMap(data['cliente'] as Map<String, dynamic>),
+        ubicaciones: (data['ubicaciones'] as List<dynamic>?)
+            ?.map((e) => Ubicacion.fromMap(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toMap() => {
@@ -118,16 +108,12 @@ class Viaje {
         'calificacion_conductor': calificacionConductor,
         'calificacion_cliente': calificacionCliente,
         'comentarios': comentarios,
-        'direccion': direccion,
-        'numero': numero,
-        'depto': depto,
-        'referencia': referencia,
-        'id_comuna': idComuna,
         'estado': estado,
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
         'conductor': conductor?.toMap(),
         'cliente': cliente?.toMap(),
+        'ubicaciones': ubicaciones?.map((e) => e.toMap()).toList(),
       };
 
   /// `dart:convert`
@@ -159,16 +145,12 @@ class Viaje {
     int? calificacionConductor,
     int? calificacionCliente,
     String? comentarios,
-    String? direccion,
-    String? numero,
-    String? depto,
-    String? referencia,
-    int? idComuna,
     String? estado,
     DateTime? createdAt,
     DateTime? updatedAt,
     Usuario? conductor,
     Usuario? cliente,
+    List<Ubicacion>? ubicaciones,
   }) {
     return Viaje(
       id: id ?? this.id,
@@ -188,16 +170,12 @@ class Viaje {
           calificacionConductor ?? this.calificacionConductor,
       calificacionCliente: calificacionCliente ?? this.calificacionCliente,
       comentarios: comentarios ?? this.comentarios,
-      direccion: direccion ?? this.direccion,
-      numero: numero ?? this.numero,
-      depto: depto ?? this.depto,
-      referencia: referencia ?? this.referencia,
-      idComuna: idComuna ?? this.idComuna,
       estado: estado ?? this.estado,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       conductor: conductor ?? this.conductor,
       cliente: cliente ?? this.cliente,
+      ubicaciones: ubicaciones ?? this.ubicaciones,
     );
   }
 }

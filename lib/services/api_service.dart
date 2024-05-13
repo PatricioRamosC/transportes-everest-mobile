@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -29,13 +28,13 @@ class ApiService {
   Future<dynamic> sendRequest({
     required String method,
     required String endpoint,
-    dynamic params,
+    String? params,
     Map<String, String>? headers,
     Duration timeout = const Duration(seconds: 10),
   }) async {
     http.Request request = http.Request(method, Uri.parse('$baseUrl$endpoint'));
     if (params != null) {
-      request.body = jsonEncode(params);
+      request.body = params;
     }
     request.headers.addAll(headers ?? {});
 
