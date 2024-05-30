@@ -116,6 +116,7 @@ class ViajeController extends BaseController {
   }
 
   Ubicacion? getUbicacion(Viaje item, String tipo) {
-    return item.ubicaciones?.firstWhere((element) => element.tipo == tipo);
+    return item.ubicaciones?.firstWhere((element) => element.tipo == tipo,
+        orElse: () => Ubicacion());
   }
 }

@@ -276,6 +276,7 @@ class Utils {
     List<Location> resultados = await locationFromAddress(address);
 
     if (resultados.isNotEmpty) {
+      debugPrint(resultados.first.toString());
       return resultados.first;
     } else {
       return null;

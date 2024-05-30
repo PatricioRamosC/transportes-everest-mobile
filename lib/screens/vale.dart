@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/viaje_controller.dart';
 import 'package:transportes_everest_mobile/entidades/ubicacion.dart';
 import 'package:transportes_everest_mobile/entidades/viaje.dart';
 import 'package:transportes_everest_mobile/entidades/viajes_pendientes/viajes_pendientes.dart';
-
+import 'package:transportes_everest_mobile/screens/map_screen.dart';
 import '../entidades/enlace_request.dart';
 
 class Vale extends StatefulWidget {
@@ -84,52 +86,104 @@ class _ValeState extends State<Vale> {
     return viaje;
   }
 
-  Column getTexto(Viaje item, bool estado) {
-    Ubicacion ubicacion =
-        viajeController.getUbicacion(item, Constants.pendiente) ?? Ubicacion();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(
-        item.cliente?.name ?? '',
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-      ),
-      Text("${ubicacion.direccion ?? ''} ${ubicacion.numero}"),
-      Text(ubicacion.comuna?.comuna ?? ''),
-      GestureDetector(
-        onTap: () {
-          // Launch the phone call intent with the phone number
-          viajeController.utils.openPhoneCall(
-              viajeController.utils.phoneFormatted(item.cliente?.phone ?? ''));
-        },
-        child: Text(
-          viajeController.utils.phoneFormatted(item.cliente?.phone ?? ''),
-          style: const TextStyle(
-            decoration: TextDecoration
-                .underline, // Optional: Underline the phone number
-            color: Colors
-                .blue, // Optional: Set a distinct color for the phone number
+  Expanded getTexto(Viaje item, bool estado) {
+    Ubicacion origen =
+        viajeController.getUbicacion(item, Constants.ubicacionOrigen) ??
+            Ubicacion();
+    Ubicacion destino =
+        viajeController.getUbicacion(item, Constants.ubicacionDestino) ??
+            Ubicacion();
+    return Expanded(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          item.cliente?.name ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+        ),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(5.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            onPressed: () => {},
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  Constants.textoUbicacionOrigen,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+                ),
+                Text("${origen.direccion ?? ''} ${origen.numero}"),
+                Text(origen.comuna?.comuna ?? ''),
+              ],
+            )),
+        const SizedBox(height: 10.0),
+        const Text(
+          Constants.textoUbicacionDestino,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+        ),
+        Text("${destino.direccion ?? ''} ${destino.numero}"),
+        Text(destino.comuna?.comuna ?? ''),
+        GestureDetector(
+          onTap: () {
+            // Launch the phone call intent with the phone number
+            viajeController.utils.openPhoneCall(viajeController.utils
+                .phoneFormatted(item.cliente?.phone ?? ''));
+          },
+          child: Text(
+            viajeController.utils.phoneFormatted(item.cliente?.phone ?? ''),
+            style: const TextStyle(
+              decoration: TextDecoration
+                  .underline, // Optional: Underline the phone number
+              color: Colors
+                  .blue, // Optional: Set a distinct color for the phone number
+            ),
           ),
         ),
-      ),
-      GestureDetector(
-        onTap: () {
-          // Launch the phone call intent with the phone number
-          viajeController.utils.openMaps(
-              ubicacion.direccion ?? '',
-              ubicacion.numero ?? '',
-              ubicacion.comuna?.comuna ?? '',
-              ubicacion.comuna?.region?.region ?? '');
-        },
-        child: Text(
-          "${ubicacion.direccion ?? ''}${ubicacion.numero ?? ''}",
-          style: const TextStyle(
-            decoration: TextDecoration
-                .underline, // Optional: Underline the phone number
-            color: Colors
-                .blue, // Optional: Set a distinct color for the phone number
+        GestureDetector(
+          onTap: () {
+            // Launch the phone call intent with the phone number
+            viajeController.utils.obtenerCoordenadas(
+                destino.direccion ?? '',
+                destino.numero ?? '',
+                destino.comuna?.comuna ?? '',
+                destino.comuna?.region?.region ?? '');
+            // viajeController.utils.openMaps(
+            //     origen.direccion ?? '',
+            //     origen.numero ?? '',
+            //     origen.comuna?.comuna ?? '',
+            //     origen.comuna?.region?.region ?? '');
+          },
+          child: Text(
+            "${origen.direccion ?? ''}${origen.numero ?? ''}",
+            style: const TextStyle(
+              decoration: TextDecoration
+                  .underline, // Optional: Underline the phone number
+              color: Colors
+                  .blue, // Optional: Set a distinct color for the phone number
+            ),
           ),
         ),
-      ),
-    ]);
+        ElevatedButton(
+            onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapScreen(
+                          informacionDestino: origen.direccion ?? '',
+                          source: LatLng(
+                              double.parse(item.origenLatitud ?? "0"),
+                              double.parse(item.origenLongitud ?? "0")),
+                          destination: LatLng(
+                              double.parse(item.destinoLatitud ?? "0"),
+                              double.parse(item.destinoLongitud ?? "0"))),
+                    ),
+                  )
+                },
+            child: const Text('Ir'))
+      ]),
+    );
   }
 
   ListView getViajes(ViajesPendientes viajes, String estado) {
@@ -138,30 +192,38 @@ class _ValeState extends State<Vale> {
       itemBuilder: (context, index) {
         return ListTile(
             title: Card(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              getTexto(viajes.payload![index], (estado == Constants.pendiente)),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.time_to_leave),
-                label: Text(estado == Constants.pendiente
-                    ? "Iniciar"
-                    : (estado == Constants.enProceso ? "Terminar" : "Firmar")),
-                onPressed: () {
-                  if (estado != Constants.finalizado) {
-                    setEstado(viajes.payload![index], estado);
-                  } else {
-                    sendSign(viajes.payload![index]);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+          color:
+              index % 2 == 0 ? Colors.indigo.shade50 : Colors.indigo.shade100,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                getTexto(
+                    viajes.payload![index], (estado == Constants.pendiente)),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.time_to_leave),
+                  label: Text(estado == Constants.pendiente
+                      ? "Iniciar"
+                      : (estado == Constants.enProceso
+                          ? "Terminar"
+                          : "Firmar")),
+                  onPressed: () {
+                    if (estado != Constants.finalizado) {
+                      setEstado(viajes.payload![index], estado);
+                    } else {
+                      sendSign(viajes.payload![index]);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ));
       },

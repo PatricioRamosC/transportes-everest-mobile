@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:transportes_everest_mobile/providers/screens_provider.dart';
+import 'package:transportes_everest_mobile/providers/session_provider.dart';
 import 'package:transportes_everest_mobile/screens/vale.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    Provider<SessionProvider>(create: (_) => SessionProvider()),
+    Provider<ScreensProvider>(create: (_) => ScreensProvider()),
+  ], child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

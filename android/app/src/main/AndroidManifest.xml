@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <application
-        android:label="transportes_everest_mobile"
+        android:label="Transportes Everest"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -32,6 +32,9 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA76vdXFU-YkIoLW37TPQb3H4kZfCd8vA4" />
+            android:value="AIzaSyB9flpE5_siRHSJ7AZJSjTU2keu_B7TaGk" />
+        <!-- <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA76vdXFU-YkIoLW37TPQb3H4kZfCd8vA4" /> -->
     </application>
 </manifest>
