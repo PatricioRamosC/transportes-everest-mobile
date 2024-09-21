@@ -3,7 +3,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
-
 import '../utils/utils.dart';
 
 class MapScreen extends StatefulWidget {
@@ -28,7 +27,7 @@ class _MapScreenState extends State<MapScreen> {
   Utils utils = Utils();
 
   void getCurrentLocation() async {
-    return;
+    // return;
     Location location = Location();
     currentLocation = LatLng(widget.source.latitude, widget.source.longitude);
     location.getLocation().then((value) {
@@ -55,12 +54,20 @@ class _MapScreenState extends State<MapScreen> {
 
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult results = await polylinePoints.getRouteBetweenCoordinates(
-        Constants.googleApiKey,
-        PointLatLng(widget.source.latitude, widget.source.longitude),
-        PointLatLng(widget.destination.latitude, widget.destination.longitude),
-        wayPoints: List<PolylineWayPoint>.generate(3, (index) {
-          return puntos[index];
-        }));
+      googleApiKey: Constants.googleApiKey,
+      request: PolylineRequest(
+        origin: PointLatLng(widget.source.latitude, widget.source.longitude),
+        destination: PointLatLng(
+            widget.destination.latitude, widget.destination.longitude),
+        mode: TravelMode.driving,
+        wayPoints: puntos,
+      ),
+      // PointLatLng(widget.source.latitude, widget.source.longitude),
+      // PointLatLng(widget.destination.latitude, widget.destination.longitude),
+      // wayPoints: List<PolylineWayPoint>.generate(3, (index) {
+      //   return puntos[index];
+      // }),
+    );
     if (results.points.isNotEmpty) {
       setState(() {
         for (PointLatLng element in results.points) {

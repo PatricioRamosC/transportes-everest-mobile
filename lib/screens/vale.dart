@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
@@ -11,14 +10,15 @@ import 'package:transportes_everest_mobile/screens/map_screen.dart';
 import '../entidades/enlace_request.dart';
 
 class Vale extends StatefulWidget {
-  const Vale({super.key});
+  final GlobalKey<NavigatorState> navigatorKey;
+  const Vale({super.key, required this.navigatorKey});
 
   @override
   State<Vale> createState() => _ValeState();
 }
 
 class _ValeState extends State<Vale> {
-  ViajeController viajeController = ViajeController();
+  late ViajeController viajeController;
   ViajesPendientes viajesPendientes = ViajesPendientes();
   ViajesPendientes viajesEnCurso = ViajesPendientes();
   ViajesPendientes viajesPorFirmar = ViajesPendientes();
@@ -27,6 +27,7 @@ class _ValeState extends State<Vale> {
   @override
   void initState() {
     super.initState();
+    viajeController = ViajeController(navigatorKey: widget.navigatorKey);
     debug('Inicio State');
     cargarInformacion();
   }
@@ -37,36 +38,31 @@ class _ValeState extends State<Vale> {
 
   @override
   Widget build(BuildContext context) {
-    const title = 'Viajes Pendientes';
-
-    return MaterialApp(
-      title: title,
-      home: DefaultTabController(
-        length: 3,
-        child: SafeArea(
-          child: Scaffold(
-            appBar: const TabBar(
-              tabs: [
-                Tab(text: 'Pendiente'),
-                Tab(text: 'En curso'),
-                Tab(text: 'Por firmar')
-              ],
-            ),
-            body: Center(
-              child: isLoading
-                  ? const CircularProgressIndicator()
-                  : TabBarView(children: [
-                      getViajes(viajesPendientes, Constants.pendiente),
-                      getViajes(viajesEnCurso, Constants.enProceso),
-                      getViajes(viajesPorFirmar, Constants.finalizado)
-                    ]),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                cargarInformacion();
-              },
-              child: const Icon(Icons.refresh),
-            ),
+    return DefaultTabController(
+      length: 3,
+      child: SafeArea(
+        child: Scaffold(
+          appBar: const TabBar(
+            tabs: [
+              Tab(text: 'Pendiente'),
+              Tab(text: 'En curso'),
+              Tab(text: 'Por firmar')
+            ],
+          ),
+          body: Center(
+            child: isLoading
+                ? const CircularProgressIndicator()
+                : TabBarView(children: [
+                    getViajes(viajesPendientes, Constants.pendiente),
+                    getViajes(viajesEnCurso, Constants.enProceso),
+                    getViajes(viajesPorFirmar, Constants.finalizado)
+                  ]),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              cargarInformacion();
+            },
+            child: const Icon(Icons.refresh),
           ),
         ),
       ),
@@ -76,10 +72,12 @@ class _ValeState extends State<Vale> {
   Viaje getViaje(ViajesPendientes? item, int index) {
     Viaje viaje = Viaje();
     try {
+      print("Listando getViaje [$index]....");
       List<Viaje> lista = item?.payload ?? List.empty();
       if (lista.isNotEmpty && lista.length > index) {
         viaje = (lista[index]);
       }
+      print("Viajes listados [$index].");
     } on Exception catch (_) {
       debugPrint(_.toString());
     }
@@ -114,7 +112,7 @@ class _ValeState extends State<Vale> {
                   Constants.textoUbicacionOrigen,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
                 ),
-                Text("${origen.direccion ?? ''} ${origen.numero}"),
+                Text(origen.direccion ?? ''),
                 Text(origen.comuna?.comuna ?? ''),
               ],
             )),
@@ -190,42 +188,59 @@ class _ValeState extends State<Vale> {
     return ListView.builder(
       itemCount: viajes.payload?.length ?? 0,
       itemBuilder: (context, index) {
-        return ListTile(
-            title: Card(
-          color:
-              index % 2 == 0 ? Colors.indigo.shade50 : Colors.indigo.shade100,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                getTexto(
-                    viajes.payload![index], (estado == Constants.pendiente)),
-                const SizedBox(width: 8),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.time_to_leave),
-                  label: Text(estado == Constants.pendiente
-                      ? "Iniciar"
-                      : (estado == Constants.enProceso
-                          ? "Terminar"
-                          : "Firmar")),
-                  onPressed: () {
-                    if (estado != Constants.finalizado) {
-                      setEstado(viajes.payload![index], estado);
-                    } else {
-                      sendSign(viajes.payload![index]);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+        try {
+          return ListTile(
+              title: Card(
+            color:
+                index % 2 == 0 ? Colors.indigo.shade50 : Colors.indigo.shade100,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  getTexto(
+                      viajes.payload![index], (estado == Constants.pendiente)),
+                  const SizedBox(width: 8),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.time_to_leave),
+                    label: Text(estado == Constants.pendiente
+                        ? "Iniciar"
+                        : (estado == Constants.enProceso
+                            ? "Terminar"
+                            : "Firmar")),
+                    onPressed: () {
+                      if (estado != Constants.finalizado) {
+                        setEstado(viajes.payload![index], estado);
+                      } else {
+                        sendSign(viajes.payload![index]);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ));
+          ));
+        } catch (e, stackTrace) {
+          print("Error en el itemBuilder: $e");
+          print("StackTrace: $stackTrace");
+          return ListTile(
+            title: Card(
+              color: Colors.red.shade100,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Error al cargar este elemento",
+                  style: TextStyle(color: Colors.red.shade900),
+                ),
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -285,20 +300,27 @@ class _ValeState extends State<Vale> {
   ///
   void cargarInformacion() async {
     try {
+      print('cargarInformacion');
       isLoading = true;
       ViajesPendientes? viajes1 = ViajesPendientes();
       ViajesPendientes? viajes2 = ViajesPendientes();
       ViajesPendientes? viajes3 = ViajesPendientes();
 
+      print('Consultando obtenerViajesPendientes...');
       viajes1 = await viajeController.obtenerViajesPendientes();
+      print('Consultando obtenerViajesEnProceso...');
       viajes2 = await viajeController.obtenerViajesEnProceso();
+      print('Consultando obtenerViajesPorFirmar...');
       viajes3 = await viajeController.obtenerViajesPorFirmar();
+      print('Informacion retornada.');
 
+      print('Fijando el estado de las variables...');
       setState(() {
         viajesPendientes = (viajes1 ?? ViajesPendientes());
         viajesEnCurso = (viajes2 ?? ViajesPendientes());
         viajesPorFirmar = (viajes3 ?? ViajesPendientes());
       });
+      print('Fijado el estado de las variables.');
     } catch (e) {
       viajeController.utils.toastError(e.toString());
     } finally {

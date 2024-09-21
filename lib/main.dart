@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:transportes_everest_mobile/providers/screens_provider.dart';
 import 'package:transportes_everest_mobile/providers/session_provider.dart';
+import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/vale.dart';
+import 'package:transportes_everest_mobile/screens/login.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -19,6 +21,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -30,12 +34,10 @@ class _MyAppState extends State<MyApp> {
       secondaryContainer: Colors.green.shade700,
       // Definir colores para diferentes partes de la interfaz de usuario
       surface: Colors.white,
-      background: Colors.white,
       error: Colors.red,
       onPrimary: Colors.white,
       onSecondary: Colors.black,
       onSurface: Colors.black,
-      onBackground: Colors.black,
       onError: Colors.white,
       // Opcional: definir un brillo para los colores claros y oscuros
       brightness: Brightness.light,
@@ -68,21 +70,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Transportes Everest',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         colorScheme: colorScheme,
         textTheme: textTheme,
@@ -93,10 +80,17 @@ class _MyAppState extends State<MyApp> {
 
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Transportes Everest'),
-      initialRoute: '/vale',
+      navigatorKey: navigatorKey,
+      home: LoginPage(navigatorKey: navigatorKey),
+      //home: const MyHomePage(title: 'Transportes Everest'),
+      initialRoute: '/',
+      //initialRoute: '/login',
       routes: {
-        '/vale': (context) => const Vale(),
+        // '/login': (context) => LoginPage(navigatorKey: navigatorKey),
+        '/menu': (context) => Everest(navigatorKey: navigatorKey),
+        '/vale': (context) => Vale(
+              navigatorKey: navigatorKey,
+            ),
         // '/details': (context) => DetailsScreen(),
       },
       // Pantalla inicial

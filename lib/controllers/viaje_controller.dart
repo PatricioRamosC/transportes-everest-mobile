@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+// import 'package:http/http.dart' as http;
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/base_controller.dart';
 import 'package:transportes_everest_mobile/entidades/enlace_response.dart';
@@ -10,6 +11,8 @@ import '../entidades/viaje.dart';
 import '../entidades/viajes_pendientes/viajes_pendientes.dart';
 
 class ViajeController extends BaseController {
+  ViajeController({required super.navigatorKey});
+
   ///
   /// Propósito: Viajes pendientes para ser atendidos por el conductor.
   ///
@@ -38,25 +41,27 @@ class ViajeController extends BaseController {
     try {
       int conductor = await utils.getInteger("idConductor") ?? 1;
       conductor = 1;
-      http.Response? response = await apiService.sendRequest(
-          method: 'GET',
-          endpoint: "${UrlConstants.viajesConductorUrl}/$conductor/$estado");
+      Response? response = await apiService.get(
+          "${UrlConstants.viajesConductorUrl}/$conductor/$estado", null);
 
+      debug('obtenerViajes statusCode ${response?.statusCode}');
       if (response?.statusCode == 200) {
-        debug(response!.body);
-        Map<String, dynamic> json = jsonDecode(response.body);
-        debug(json['payload'].toString());
-        debug(ViajesPendientes.fromJson(response.body).toString());
-        return ViajesPendientes.fromJson(response.body);
+        try {
+          return ViajesPendientes.fromMap(response?.data);
+        } catch (e, stackTrace) {
+          debug(stackTrace.toString());
+          debug(e.toString());
+        }
       } else if (response?.statusCode == 204) {
         utils.toastInfo(Constants.mensajeNotFound);
       } else {
-        utils.toastErrorJson(response?.body ?? '');
+        utils.toastErrorJson(response?.data.toString() ?? '{}');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debug(stackTrace.toString());
       utils.toastError(e.toString());
     }
-    return null;
+    return ViajesPendientes();
   }
 
   ///
@@ -64,21 +69,21 @@ class ViajeController extends BaseController {
   ///
   Future<bool?> updateStatus(Viaje item) async {
     try {
-      http.Response? response = await apiService.sendRequest(
+      Response? response = await apiService.sendRequest(
           method: 'PUT',
           endpoint: "${UrlConstants.viajesUrl}/${item.id}",
           params: item.toJson());
 
       if (response?.statusCode == 200) {
-        debug(response!.body);
-        Map<String, dynamic> json = jsonDecode(response.body);
+        debug(response!.data);
+        Map<String, dynamic> json = jsonDecode(response.data);
         if (json.containsKey("payload")) {
           debug(json['payload'].toString());
           // debug(Viaje.fromJson(json['payload']));
         }
         return true;
       } else {
-        utils.toastErrorJson(response?.body ?? '');
+        utils.toastErrorJson(response?.data ?? '');
       }
     } catch (e) {
       debug(e.toString());
@@ -89,14 +94,14 @@ class ViajeController extends BaseController {
 
   Future<bool?> createLink(EnlaceRequest item) async {
     try {
-      http.Response? response = await apiService.sendRequest(
+      Response? response = await apiService.sendRequest(
           method: 'POST',
           endpoint: UrlConstants.enlaceUrl,
           params: item.toJson());
 
       if (response?.statusCode == 200) {
-        debug(response!.body);
-        Map<String, dynamic> json = jsonDecode(response.body);
+        debug(response!.data);
+        Map<String, dynamic> json = jsonDecode(response.data);
         if (json.containsKey("payload")) {
           String phone;
           EnlaceResponse enlaceResponse =
@@ -107,7 +112,7 @@ class ViajeController extends BaseController {
           return true;
         }
       } else {
-        utils.toastErrorJson(response?.body ?? '');
+        utils.toastErrorJson(response?.data ?? '');
       }
     } catch (e) {
       utils.toastError(e.toString());

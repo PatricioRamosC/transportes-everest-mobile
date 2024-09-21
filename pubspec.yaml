@@ -30,16 +30,18 @@ environment:
 #  flutter_sms: ^2.3.3
 dependencies:
   cupertino_icons: ^1.0.2
+  dio: ^5.7.0
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.2.0
   flutter_polyline_points: ^2.0.0
+  flutter_secure_storage: ^9.2.2
   flutter_sms:
-    path: /src/repositorios/flutter_sms
+    path: ../flutter_sms
   fluttertoast: ^8.2.5
   geocoding: ^3.0.0
   google_maps_flutter: ^2.5.3
-  http: 1.2.0
+  http: 1.2.1
   image_picker: 1.0.8
   location: ^6.0.2
   path_provider: ^2.1.3
@@ -88,3 +90,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  assets:
+    - assets/localhost.pem

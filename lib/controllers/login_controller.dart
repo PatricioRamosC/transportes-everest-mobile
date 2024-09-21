@@ -1,0 +1,46 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:transportes_everest_mobile/config/constants.dart';
+import 'package:transportes_everest_mobile/controllers/base_controller.dart';
+import 'package:transportes_everest_mobile/entidades/login/login.dart';
+import '../config/url.dart';
+
+class LoginController extends BaseController {
+  LoginController({required super.navigatorKey});
+
+  Future<bool> login(String userCode, String password) async {
+    try {
+      var body = json.encode({"email": userCode, "password": password});
+      // HttpResponseData response =
+      //     await apiService.post(endpoint: UrlConstants.loginUrl, body: body);
+      Response? response =
+          await apiService.post(UrlConstants.loginUrl, body, null);
+
+      print('statusCode');
+      print(response?.statusCode);
+      print(response?.extra);
+      print(response?.data);
+      if (response?.statusCode == 200) {
+        Login login = Login.fromJson(response?.data ?? '{}');
+        print(login);
+        apiService.storeLoginData(
+            login.payload?.accessToken ?? '',
+            login.payload?.accessToken ?? '',
+            login.payload?.userId.toString() ?? '',
+            login.payload?.clientId ?? '');
+        return true;
+      } else if (response?.statusCode == 204) {
+        utils.toastInfo(Constants.mensajeNotFound);
+      } else if (response != null) {
+        utils.toastErrorJson(response.data ?? '');
+      } else {
+        utils.toastError('Falla en el Login');
+      }
+    } on DioException catch (e) {
+      print('Login DioException');
+      print(e.toString());
+      utils.toastError(e.message ?? '');
+    }
+    return false;
+  }
+}
