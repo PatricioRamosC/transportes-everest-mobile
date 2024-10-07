@@ -113,6 +113,19 @@ class ApiServiceDio {
     return null;
   }
 
+  Future<Response?> put(
+      String url, Object? data, Map<String, dynamic>? queryParameters) async {
+    try {
+      debugPrint('URL $baseUrl$url');
+      debugPrint('data $data');
+      return await _dio.put(baseUrl + url,
+          data: data, queryParameters: queryParameters);
+    } on Exception catch (_, ex) {
+      debugPrint(ex.toString());
+    }
+    return null;
+  }
+
   Future<void> storeLoginData(String accessToken, String tokenID, String userID,
       String clientID) async {
     debugPrint('accessToken $accessToken');

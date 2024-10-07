@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transportes_everest_mobile/providers/screens_provider.dart';
 import 'package:transportes_everest_mobile/providers/session_provider.dart';
 import 'package:transportes_everest_mobile/screens/everest.dart';
-import 'package:transportes_everest_mobile/screens/vale.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
+import 'package:transportes_everest_mobile/screens/vale2.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -82,19 +83,45 @@ class _MyAppState extends State<MyApp> {
       ),
       navigatorKey: navigatorKey,
       home: LoginPage(navigatorKey: navigatorKey),
+      onGenerateRoute: generateRoute,
       //home: const MyHomePage(title: 'Transportes Everest'),
       initialRoute: '/',
       //initialRoute: '/login',
+      /*
       routes: {
         // '/login': (context) => LoginPage(navigatorKey: navigatorKey),
         '/menu': (context) => Everest(navigatorKey: navigatorKey),
-        '/vale': (context) => Vale(
+        '/vale': (context) => Vale2(
               navigatorKey: navigatorKey,
             ),
         // '/details': (context) => DetailsScreen(),
       },
+      */
       // Pantalla inicial
     );
+  }
+
+  Route<dynamic> generateRoute(RouteSettings settings) {
+    // Aquí definimos las rutas personalizadas
+    switch (settings.name) {
+      case '/menu':
+        return MaterialPageRoute(
+            builder: (_) => Everest(navigatorKey: navigatorKey));
+      case '/vale':
+        return MaterialPageRoute(
+            builder: (_) => Vale2(
+                  navigatorKey: navigatorKey,
+                ));
+      // case '/tripDetails':
+      //   final tripId =
+      //       settings.arguments as String; // Pasando argumentos a la ruta
+      //   return MaterialPageRoute(
+      //       builder: (_) => TripDetailsScreen(tripId: tripId));
+      default:
+        return MaterialPageRoute(
+            builder: (_) =>
+                const NotFoundScreen()); // Ruta por defecto si no se encuentra la ruta
+    }
   }
 }
 
@@ -114,6 +141,15 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {

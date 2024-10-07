@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/base_controller.dart';
 import 'package:transportes_everest_mobile/entidades/enlace_response.dart';
-import '../entidades/ubicacion.dart';
+import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 import '../config/url.dart';
 import '../entidades/enlace_request.dart';
 import '../entidades/viaje.dart';
@@ -64,6 +64,51 @@ class ViajeController extends BaseController {
     return ViajesPendientes();
   }
 
+  Future<ViajeApi2?> getViajes(String estado) async {
+    try {
+      int conductor = await utils.getInteger("idConductor") ?? 1;
+      conductor = 1;
+      Response? response = await apiService.get(
+          "${UrlConstants.viajesConductorUrl}/$conductor/$estado", null);
+
+      debug('obtenerViajes statusCode ${response?.statusCode}');
+      if (response?.statusCode == 200) {
+        try {
+          return ViajeApi2.fromJson(response?.data);
+        } catch (e, stackTrace) {
+          debug(stackTrace.toString());
+          debug(e.toString());
+        }
+      } else if (response?.statusCode == 204) {
+        utils.toastInfo(Constants.mensajeNotFound);
+      } else {
+        utils.toastErrorJson(response?.data.toString() ?? '{}');
+      }
+    } catch (e, stackTrace) {
+      debug(stackTrace.toString());
+      utils.toastError(e.toString());
+    }
+    return ViajeApi2();
+  }
+
+  Future<ViajeApi2?> getViajesPendientes() async {
+    return await getViajes(Constants.pendiente);
+  }
+
+  ///
+  /// Propósito: Viajes en proceso que ha sido atendido por el conductor.
+  ///
+  Future<ViajeApi2?> getViajesEnProceso() async {
+    return await getViajes(Constants.enProceso);
+  }
+
+  ///
+  /// Propósito: Viajes finalizador por el conductor, pero que no han sido firmado.
+  ///
+  Future<ViajeApi2?> getViajesPorFirmar() async {
+    return await getViajes(Constants.terminado);
+  }
+
   ///
   /// Propósito: Actualizar estado del viaje.
   ///
@@ -73,6 +118,58 @@ class ViajeController extends BaseController {
           method: 'PUT',
           endpoint: "${UrlConstants.viajesUrl}/${item.id}",
           params: item.toJson());
+
+      if (response?.statusCode == 200) {
+        debug(response!.data);
+        Map<String, dynamic> json = jsonDecode(response.data);
+        if (json.containsKey("payload")) {
+          debug(json['payload'].toString());
+          // debug(Viaje.fromJson(json['payload']));
+        }
+        return true;
+      } else {
+        utils.toastErrorJson(response?.data ?? '');
+      }
+    } catch (e) {
+      debug(e.toString());
+      utils.toastError(e.toString());
+    }
+    return false;
+  }
+
+  ///
+  /// Propósito: Actualizar estado del viaje.
+  ///
+  Future<bool?> updateTravelStatus(ViajePayload item) async {
+    try {
+      Response? response = await apiService.put(
+          "${UrlConstants.viajesUrl}/${item.id}", item.toJson(), null);
+
+      if (response?.statusCode == 200) {
+        Map<String, dynamic> json = response?.data;
+        if (json.containsKey("payload")) {
+          debug(json['payload'].toString());
+          // debug(Viaje.fromJson(json['payload']));
+        }
+        return true;
+      } else {
+        utils.toastErrorJson(response?.data ?? '');
+      }
+    } catch (e, stackTrace) {
+      debug("StackTrace: $stackTrace");
+      debug(e.toString());
+      utils.toastError(e.toString());
+    }
+    return false;
+  }
+
+  ///
+  /// Propósito: Actualizar estado del viaje.
+  ///
+  Future<bool?> updateStatusPassanger(Pasajero item) async {
+    try {
+      Response? response = await apiService.put(
+          "${UrlConstants.viajesPasajeroUrl}/${item.id}", item, null);
 
       if (response?.statusCode == 200) {
         debug(response!.data);
@@ -120,8 +217,19 @@ class ViajeController extends BaseController {
     return false;
   }
 
-  Ubicacion? getUbicacion(Viaje item, String tipo) {
+/*   Ubicacion? getUbicacion(Viaje item, String tipo) {
     return item.ubicaciones?.firstWhere((element) => element.tipo == tipo,
         orElse: () => Ubicacion());
+  }
+ */
+  Ubicacion? getLocation(ViajePayload item, String tipo) {
+    return item.ubicaciones?.firstWhere((element) => element.tipo == tipo,
+        orElse: () => Ubicacion());
+  }
+
+  Pasajero getPasajeroRetirar(ViajePayload item) {
+    return item.pasajeros
+            ?.firstWhere((x) => x.estado == "P", orElse: () => Pasajero()) ??
+        Pasajero();
   }
 }

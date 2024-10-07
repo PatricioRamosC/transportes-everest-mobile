@@ -86,11 +86,11 @@ class _ValeState extends State<Vale> {
 
   Expanded getTexto(Viaje item, bool estado) {
     Ubicacion origen =
-        viajeController.getUbicacion(item, Constants.ubicacionOrigen) ??
-            Ubicacion();
+        // viajeController.getUbicacion(item, Constants.ubicacionOrigen) ??
+        Ubicacion();
     Ubicacion destino =
-        viajeController.getUbicacion(item, Constants.ubicacionDestino) ??
-            Ubicacion();
+        // viajeController.getUbicacion(item, Constants.ubicacionDestino) ??
+        Ubicacion();
     return Expanded(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(
@@ -121,7 +121,7 @@ class _ValeState extends State<Vale> {
           Constants.textoUbicacionDestino,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
         ),
-        Text("${destino.direccion ?? ''} ${destino.numero}"),
+        Text(destino.direccion ?? ''),
         Text(destino.comuna?.comuna ?? ''),
         GestureDetector(
           onTap: () {

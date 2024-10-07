@@ -11,7 +11,8 @@ class EverestController extends BaseController {
 
   Future<List<MenuOptionPayload?>?> fetchMenuOptions() async {
     List<MenuOptionPayload?>? options = List.empty();
-    Response? response = await apiService.get(UrlConstants.menuItemUrl + '/mobile', null);
+    Response? response =
+        await apiService.get("${UrlConstants.menuItemUrl}/mobile", null);
     if (response != null) {
       print(response.data);
       options = MenuOption.fromJson(response.data).payload;

@@ -250,6 +250,30 @@ class Utils {
     return destine;
   }
 
+  Future<bool?> openWaze(String latitud, String longitud) async {
+    bool estado = false;
+    try {
+      Uri wazeMapsUri = Uri(
+        scheme: 'https',
+        host: 'www.waze.com',
+        path: '/ul',
+        queryParameters: {
+          'll': "ll=$latitud%2C$longitud",
+          'navigate': "yes",
+          'zoom': 17
+        },
+      );
+
+      if (await canLaunchUrl(wazeMapsUri)) {
+        estado = await launchUrl(wazeMapsUri);
+      }
+    } catch (e, stackTrace) {
+      debugPrint("StackTrace: $stackTrace");
+      debugPrint(e.toString());
+    }
+    return estado;
+  }
+
   Future<bool?> openMaps(
       String street, String number, String commune, String region) async {
     bool estado = false;
@@ -264,8 +288,10 @@ class Utils {
       },
     );
 
+    Clipboard.setData(ClipboardData(text: address));
     if (await canLaunchUrl(googleMapsUri)) {
       estado = await launchUrl(googleMapsUri);
+      // } else {
     }
     return estado;
   }
@@ -281,5 +307,38 @@ class Utils {
     } else {
       return null;
     }
+  }
+
+  Future<void> saveRouteStack(List<Map<String, dynamic>> routeStack) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jsonString =
+        jsonEncode(routeStack); // Convertimos la lista de mapas a JSON
+    await prefs.setString('routeStack', jsonString); // Guardamos la cadena JSON
+  }
+
+  Future<List<Map<String, dynamic>>> getRouteStack() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonString =
+        prefs.getString('routeStack'); // Recuperamos la cadena JSON
+
+    if (jsonString != null) {
+      List<dynamic> jsonList =
+          jsonDecode(jsonString); // Decodificamos de JSON a lista dinámica
+      return List<Map<String, dynamic>>.from(
+          jsonList); // Convertimos la lista dinámica en lista de mapas
+    }
+
+    return []; // Si no hay nada almacenado, retornamos una lista vacía
+  }
+
+  void loadRouteStack(NavigatorState navigatorKey) async {
+    getRouteStack().then((routeStackWithArgs) {
+      for (var route in routeStackWithArgs) {
+        navigatorKey.currentState?.pushNamed(
+          route['route'],
+          arguments: route['arguments'],
+        );
+      }
+    });
   }
 }

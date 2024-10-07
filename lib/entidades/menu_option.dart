@@ -21,11 +21,12 @@ class MenuOptionPayload {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['option_name'] = optionName;
-    data['route_name'] = widgetName;
-    data['icon_name'] = iconName;
+    final Map<String, dynamic> data = {
+      'id': id,
+      'option_name': optionName,
+      'route_name': widgetName,
+      'icon_name': iconName
+    };
     return data;
   }
 
@@ -65,11 +66,11 @@ class MenuOption {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['message'] = message;
-    data['error_code'] = errorCode;
-    data['payload'] =
-        payload != null ? payload!.map((v) => v?.toJson()).toList() : null;
+    final Map<String, dynamic> data = {
+      'message': message,
+      'error_code': errorCode,
+      'payload': (payload?.map((v) => v?.toJson()).toList())
+    };
     return data;
   }
 }

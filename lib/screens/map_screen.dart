@@ -148,6 +148,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  /*
   void _navigateToDestination() async {
     GoogleMapController controller = mapController;
     controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -157,4 +158,5 @@ class _MapScreenState extends State<MapScreen> {
       ),
     ));
   }
+  */
 }

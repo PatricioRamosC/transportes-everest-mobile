@@ -15,9 +15,10 @@ class LoginOK {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['accessToken'] = accessToken;
-    data['token'] = token!.toJson();
+    final Map<String, dynamic> data = {
+      'accessToken': accessToken,
+      'token': token!.toJson()
+    };
     return data;
   }
 }
@@ -54,15 +55,16 @@ class Token {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['user_id'] = userid;
-    data['client_id'] = clientid;
-    data['name'] = name;
-    data['revoked'] = revoked;
-    data['created_at'] = createdat;
-    data['updated_at'] = updatedat;
-    data['expires_at'] = expiresat;
+    final Map<String, dynamic> data = {
+      'id': id,
+      'user_id': userid,
+      'client_id': clientid,
+      'name': name,
+      'revoked': revoked,
+      'created_at': createdat,
+      'updated_at': updatedat,
+      'expires_at': expiresat
+    };
     return data;
   }
 }

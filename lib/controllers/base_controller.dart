@@ -26,6 +26,7 @@ class BaseController {
         navigatorKey: navigatorKey);
   }
 
+  /*
   Future<HttpClient> _createHttpClient() async {
     SecurityContext context = SecurityContext();
     List<int> certificateData = await loadCertificate();
@@ -34,6 +35,7 @@ class BaseController {
     debug('Creando el httpClient con el certificado');
     return client;
   }
+  */
 
   Future<List<int>> loadCertificate() async {
     final data = await rootBundle.load('assets/localhost.pem');
