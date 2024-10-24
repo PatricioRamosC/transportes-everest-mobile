@@ -12,7 +12,6 @@ import '../entidades/viajes_pendientes/viajes_pendientes.dart';
 
 class ViajeController extends BaseController {
   ViajeController({required super.navigatorKey});
-
   ///
   /// Propósito: Viajes pendientes para ser atendidos por el conductor.
   ///
@@ -39,8 +38,7 @@ class ViajeController extends BaseController {
   ///
   Future<ViajesPendientes?> obtenerViajes(String estado) async {
     try {
-      int conductor = await utils.getInteger("idConductor") ?? 1;
-      conductor = 1;
+      int conductor = await apiService.getIntStorage("userID");
       Response? response = await apiService.get(
           "${UrlConstants.viajesConductorUrl}/$conductor/$estado", null);
 
@@ -66,8 +64,7 @@ class ViajeController extends BaseController {
 
   Future<ViajeApi2?> getViajes(String estado) async {
     try {
-      int conductor = await utils.getInteger("idConductor") ?? 1;
-      conductor = 1;
+      int conductor = await apiService.getIntStorage("userID");
       Response? response = await apiService.get(
           "${UrlConstants.viajesConductorUrl}/$conductor/$estado", null);
 

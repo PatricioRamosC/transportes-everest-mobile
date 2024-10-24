@@ -130,8 +130,8 @@ class ApiServiceDio {
       String clientID) async {
     debugPrint('accessToken $accessToken');
     debugPrint('tokenID $tokenID');
-    debugPrint('userID $userID');
     debugPrint('clientID $clientID');
+    debugPrint('userID $userID');
     await secureStorage.write(key: 'accessToken', value: accessToken);
     await secureStorage.write(key: 'tokenID', value: tokenID);
     await secureStorage.write(key: 'userID', value: userID);
@@ -144,6 +144,15 @@ class ApiServiceDio {
 
   Future<String?> getKeyStorage(String key) async {
     return await secureStorage.read(key: key);
+  }
+
+  Future<int> getIntStorage(String key) async {
+    int value = 0;
+    String? valueStr = await getKeyStorage(key);
+    if (valueStr != null) {
+      value = int.tryParse(valueStr) ?? 0;
+    }
+    return value;
   }
 
   Future<dynamic> sendRequest({

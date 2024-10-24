@@ -52,6 +52,7 @@ class Utils {
   Future<String?> getString(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? value = prefs.getString(key);
+    debugPrint("getString [$key] value [$value]");
     if (value == null) {
       return "";
     }
@@ -61,6 +62,7 @@ class Utils {
   Future<int?> getInteger(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? value = prefs.getString(key);
+    debugPrint("getInteger [$key] value [$value]");
     if (value == null) {
       return 0;
     }
@@ -70,6 +72,7 @@ class Utils {
   Future<void> setString(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
+    debugPrint("setString [$key] value [$value]");
   }
 
   void toastError(String message) {
@@ -334,7 +337,7 @@ class Utils {
   void loadRouteStack(NavigatorState navigatorKey) async {
     getRouteStack().then((routeStackWithArgs) {
       for (var route in routeStackWithArgs) {
-        navigatorKey.currentState?.pushNamed(
+        navigatorKey.pushNamed(
           route['route'],
           arguments: route['arguments'],
         );
