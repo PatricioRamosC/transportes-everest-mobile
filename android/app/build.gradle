@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def newApkName = "transportes_everest.apk"
+
 android {
     namespace "cl.paser.transportes_everest_mobile"
     compileSdkVersion 34
@@ -54,11 +56,32 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'transportes-everest-mobile'
+            keyPassword 'P4tr1c10.R4m0$'
+            // storeFile file('/~/.ssh/transportes-everest-mobile.jks')
+            storeFile file('/home/developer/.ssh/transportes-everest-mobile.jks')
+            storePassword 'P4tr1c10.R4m0$'
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true  // Activar eliminación de recursos no utilizados
+            // Añade esta tarea para cambiar el nombre del APK
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    if (variant.buildType.name == "release") {
+                        // def newApkName = "transportes_everest_${variant.versionName}.apk"
+                        outputFileName = newApkName
+                    }
+                }
+            }
         }
     }
 }
