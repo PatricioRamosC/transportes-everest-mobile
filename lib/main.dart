@@ -6,6 +6,7 @@ import 'package:transportes_everest_mobile/providers/session_provider.dart';
 import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
 import 'package:transportes_everest_mobile/screens/vale2.dart';
+import 'package:transportes_everest_mobile/screens/viaje3.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -109,7 +110,7 @@ class _MyAppState extends State<MyApp> {
             builder: (_) => Everest(navigatorKey: navigatorKey));
       case '/vale':
         return MaterialPageRoute(
-            builder: (_) => Vale2(
+            builder: (_) => Viaje3(
                   navigatorKey: navigatorKey,
                 ));
       // case '/tripDetails':

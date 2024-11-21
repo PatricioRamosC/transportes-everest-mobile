@@ -6,6 +6,7 @@ import 'package:transportes_everest_mobile/entidades/viaje.dart';
 import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 import 'package:transportes_everest_mobile/entidades/viajes_pendientes/viajes_pendientes.dart';
 import '../entidades/enlace_request.dart';
+import '../entidades/viaje_mobile.dart';
 
 class Vale2 extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -89,12 +90,12 @@ class _Vale2State extends State<Vale2> with WidgetsBindingObserver {
   Viaje getViaje(ViajesPendientes? item, int index) {
     Viaje viaje = Viaje();
     try {
-      print("Listando getViaje [$index]....");
+      debugPrint("Listando getViaje [$index]....");
       List<Viaje> lista = item?.payload ?? List.empty();
       if (lista.isNotEmpty && lista.length > index) {
         viaje = (lista[index]);
       }
-      print("Viajes listados [$index].");
+      debugPrint("Viajes listados [$index].");
     } on Exception catch (_) {
       debugPrint(_.toString());
     }
@@ -319,27 +320,27 @@ class _Vale2State extends State<Vale2> with WidgetsBindingObserver {
   ///
   void cargarInformacion() async {
     try {
-      print('cargarInformacion');
+      debugPrint('cargarInformacion');
       isLoading = true;
       ViajeApi2? viajes1 = ViajeApi2();
       ViajeApi2? viajes2 = ViajeApi2();
       ViajeApi2? viajes3 = ViajeApi2();
 
-      print('Consultando getViajesPendientes...');
+      debugPrint('Consultando getViajesPendientes...');
       viajes1 = await viajeController.getViajesPendientes();
-      print('Consultando getViajesEnProceso...');
+      debugPrint('Consultando getViajesEnProceso...');
       viajes2 = await viajeController.getViajesEnProceso();
-      print('Consultando getViajesPorFirmar...');
+      debugPrint('Consultando getViajesPorFirmar...');
       viajes3 = await viajeController.getViajesPorFirmar();
-      print('Informacion retornada.');
+      debugPrint('Informacion retornada.');
 
-      print('Fijando el estado de las variables...');
+      debugPrint('Fijando el estado de las variables...');
       setState(() {
         viajesPendientes = (viajes1 ?? ViajeApi2());
         viajesEnCurso = (viajes2 ?? ViajeApi2());
         viajesPorFirmar = (viajes3 ?? ViajeApi2());
       });
-      print('Fijado el estado de las variables.');
+      debugPrint('Fijado el estado de las variables.');
     } catch (e) {
       viajeController.utils.toastError(e.toString());
     } finally {

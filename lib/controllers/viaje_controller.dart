@@ -5,6 +5,7 @@ import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/base_controller.dart';
 import 'package:transportes_everest_mobile/entidades/enlace_response.dart';
 import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
+import 'package:transportes_everest_mobile/entidades/viaje_mobile.dart';
 import '../config/url.dart';
 import '../entidades/enlace_request.dart';
 import '../entidades/viaje.dart';
@@ -15,28 +16,28 @@ class ViajeController extends BaseController {
   ///
   /// Propósito: Viajes pendientes para ser atendidos por el conductor.
   ///
-  Future<ViajesPendientes?> obtenerViajesPendientes() async {
+  Future<ViajeMobile?> obtenerViajesPendientes() async {
     return await obtenerViajes(Constants.pendiente);
   }
 
   ///
   /// Propósito: Viajes en proceso que ha sido atendido por el conductor.
   ///
-  Future<ViajesPendientes?> obtenerViajesEnProceso() async {
+  Future<ViajeMobile?> obtenerViajesEnProceso() async {
     return await obtenerViajes(Constants.enProceso);
   }
 
   ///
   /// Propósito: Viajes finalizador por el conductor, pero que no han sido firmado.
   ///
-  Future<ViajesPendientes?> obtenerViajesPorFirmar() async {
+  Future<ViajeMobile?> obtenerViajesPorFirmar() async {
     return await obtenerViajes(Constants.terminado);
   }
 
   ///
   /// Propósito: Funcionalidad que permite obtener los viajes según el estado.
   ///
-  Future<ViajesPendientes?> obtenerViajes(String estado) async {
+  Future<ViajeMobile?> obtenerViajes(String estado) async {
     try {
       int conductor = await apiService.getIntStorage("userID");
       Response? response = await apiService.get(
@@ -45,7 +46,7 @@ class ViajeController extends BaseController {
       debug('obtenerViajes statusCode ${response?.statusCode}');
       if (response?.statusCode == 200) {
         try {
-          return ViajesPendientes.fromMap(response?.data);
+          return ViajeMobile.fromJson(response?.data);
         } catch (e, stackTrace) {
           debug(stackTrace.toString());
           debug(e.toString());
@@ -59,7 +60,7 @@ class ViajeController extends BaseController {
       debug(stackTrace.toString());
       utils.toastError(e.toString());
     }
-    return ViajesPendientes();
+    return ViajeMobile();
   }
 
   Future<ViajeApi2?> getViajes(String estado) async {

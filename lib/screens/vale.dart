@@ -50,9 +50,11 @@ class _ValeState extends State<Vale> {
             ],
           ),
           body: Center(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : TabBarView(children: [
+            child: 
+            // isLoading
+            //     ? const CircularProgressIndicator()
+            //     : 
+                TabBarView(children: [
                     getViajes(viajesPendientes, Constants.pendiente),
                     getViajes(viajesEnCurso, Constants.enProceso),
                     getViajes(viajesPorFirmar, Constants.finalizado)
@@ -306,13 +308,13 @@ class _ValeState extends State<Vale> {
       ViajesPendientes? viajes2 = ViajesPendientes();
       ViajesPendientes? viajes3 = ViajesPendientes();
 
-      print('Consultando obtenerViajesPendientes...');
-      viajes1 = await viajeController.obtenerViajesPendientes();
-      print('Consultando obtenerViajesEnProceso...');
-      viajes2 = await viajeController.obtenerViajesEnProceso();
-      print('Consultando obtenerViajesPorFirmar...');
-      viajes3 = await viajeController.obtenerViajesPorFirmar();
-      print('Informacion retornada.');
+      // print('Consultando obtenerViajesPendientes...');
+      // viajes1 = await viajeController.obtenerViajesPendientes();
+      // print('Consultando obtenerViajesEnProceso...');
+      // viajes2 = await viajeController.obtenerViajesEnProceso();
+      // print('Consultando obtenerViajesPorFirmar...');
+      // viajes3 = await viajeController.obtenerViajesPorFirmar();
+      // print('Informacion retornada.');
 
       print('Fijando el estado de las variables...');
       setState(() {
@@ -327,4 +329,9 @@ class _ValeState extends State<Vale> {
       isLoading = false;
     }
   }
+
+  void print(String msg) {
+    debugPrint("DEBUG: $msg");
+  }
+
 }
