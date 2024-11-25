@@ -19,10 +19,13 @@ class ViajeMobilePayload {
     String? destinoLongitud;
     String? destinoRegion;
     String? region;
+    int? tarifa;
+    int? destinoId;
+    int? pasajeroId;
 
     ViajeMobilePayload({this.id, this.fechahorasolicitud, this.proximoDestinoId, this.proximoDestino, this.comunaProximoDestino, 
                       this.pasajero, this.destino, this.destinoComuna, this.phone,
-                      this.latitud, this.longitud, this.destinoLatitud, this.destinoLongitud, this.destinoRegion, this.region}); 
+                      this.latitud, this.longitud, this.destinoLatitud, this.destinoLongitud, this.destinoRegion, this.region, this.tarifa, this.destinoId, this.pasajeroId}); 
 
     ViajeMobilePayload.fromJson(Map<String, dynamic> json) {
         id = json['id'];
@@ -40,6 +43,9 @@ class ViajeMobilePayload {
         destinoLongitud = json['destinoLongitud'];
         destinoRegion = json['destinoRegion'];
         region = json['region'];
+        tarifa = json['tarifa'];
+        destinoId = json['destinoId'];
+        pasajeroId = json['pasajeroId'];
     }
 
     Map<String, dynamic> toJson() {
@@ -59,6 +65,9 @@ class ViajeMobilePayload {
           'destinoLatitud' : destinoLatitud,
           'destinoLongitud' : destinoLongitud,
           'destinoRegion' : destinoRegion,
+          'tarifa' : tarifa,
+          'destinoId' : destinoId,
+          'pasajeroId' : pasajeroId,
         };
         return data;
     }

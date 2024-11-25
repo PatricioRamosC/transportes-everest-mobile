@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transportes_everest_mobile/providers/screens_provider.dart';
@@ -7,6 +8,7 @@ import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
 import 'package:transportes_everest_mobile/screens/vale2.dart';
 import 'package:transportes_everest_mobile/screens/viaje3.dart';
+import 'package:transportes_everest_mobile/utils/theme.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -34,6 +36,8 @@ class _MyAppState extends State<MyApp> {
       primaryContainer: Colors.blue.shade700,
       secondary: Colors.green,
       secondaryContainer: Colors.green.shade700,
+      // Colores para los botones.
+
       // Definir colores para diferentes partes de la interfaz de usuario
       surface: Colors.white,
       error: Colors.red,
@@ -66,22 +70,16 @@ class _MyAppState extends State<MyApp> {
           fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
     );
 
-    InputDecorationTheme inputDecorationTheme = const InputDecorationTheme(
-        labelStyle: TextStyle(fontSize: 12.0, color: Colors.blueGrey));
+    MaterialTheme materialTheme = MaterialTheme(textTheme);
 
     return MaterialApp(
       title: 'Transportes Everest',
-      theme: ThemeData(
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        colorScheme: colorScheme,
-        textTheme: textTheme,
-
-        dropdownMenuTheme:
-            DropdownMenuThemeData(inputDecorationTheme: inputDecorationTheme),
-        inputDecorationTheme: inputDecorationTheme,
-
-        useMaterial3: true,
-      ),
+      theme: materialTheme.lightHighContrast(),
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(
+      //     seedColor: Colors.red,
+      //   ),
+      // ),
       navigatorKey: navigatorKey,
       home: LoginPage(navigatorKey: navigatorKey),
       onGenerateRoute: generateRoute,

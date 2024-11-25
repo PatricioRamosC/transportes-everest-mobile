@@ -164,19 +164,13 @@ class ViajeController extends BaseController {
   ///
   /// Propósito: Actualizar estado del viaje.
   ///
-  Future<bool?> updateStatusPassanger(Pasajero item) async {
+  Future<ViajeMobile?> updateStatusPassanger(int id) async {
     try {
       Response? response = await apiService.put(
-          "${UrlConstants.viajesPasajeroUrl}/${item.id}", item, null);
+          "${UrlConstants.viajesPasajeroUrl}/$id", null, null);
 
       if (response?.statusCode == 200) {
-        debug(response!.data);
-        Map<String, dynamic> json = jsonDecode(response.data);
-        if (json.containsKey("payload")) {
-          debug(json['payload'].toString());
-          // debug(Viaje.fromJson(json['payload']));
-        }
-        return true;
+          return ViajeMobile.fromJson(response?.data);
       } else {
         utils.toastErrorJson(response?.data ?? '');
       }
@@ -184,7 +178,7 @@ class ViajeController extends BaseController {
       debug(e.toString());
       utils.toastError(e.toString());
     }
-    return false;
+    return null;
   }
 
   Future<bool?> createLink(EnlaceRequest item) async {

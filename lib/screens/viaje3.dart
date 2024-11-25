@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 
 import '../config/constants.dart';
 import '../controllers/viaje_controller.dart';
@@ -149,21 +150,23 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
     );
   }
 
+  // Card de cada Viaje que se muestra en pantalla.
   Expanded getTexto(ViajeMobilePayload item, bool pendiente) {
-/*     Ubicacion origen =
-        viajeController.getLocation(item, Constants.ubicacionOrigen) ??
-            Ubicacion();
-    Ubicacion destino =
-        viajeController.getLocation(item, Constants.ubicacionDestino) ??
-            Ubicacion();
-    Pasajero pasajero = viajeController.getPasajeroRetirar(item);
- */ 
     return Expanded(
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Text("Solicitud: ${item.fechahorasolicitud}"),
+        (item.proximoDestinoId != item.destinoId ? 
         Text(
           "Pasajero: ${item.pasajero ?? ''}",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+        ) : 
+        const Text(
+          "Destino Final",
+          style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+        )
         ),
+        Text("Tarifa : ${item.tarifa}",
+          style: const TextStyle(fontWeight: FontWeight.bold)),
         const Divider(
           color: Colors.grey,
           thickness: 1.0,
@@ -209,19 +212,25 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
             // } else {
             //   item.estado = 'T';
             // }
-            // viajeController.updateTravelStatus(item);
-            cargarInformacion();
+            viajeController.updateStatusPassanger(item.pasajeroId ?? 0)
+                .then(
+                  (response) {
+                    setState(() {
+                      item = response?.payload?[0] as ViajeMobilePayload;
+                    });
+                  }, 
+                onError: (error) {
+                  viajeController.utils.toastError(error);
+                });
           },
-          child: const Expanded(
-            child:
-                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              Icon(Icons.time_to_leave),
-              SizedBox(
-                width: 10.0,
-              ),
-              Text('Iniciar')
-            ]),
-          ),
+          child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center, 
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.time_to_leave),
+                  SizedBox(width: 10.0),
+                  Text('Iniciar')
+                ]),
         ),
       ]),
     );
@@ -235,11 +244,12 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
             child: Column(
               children: [
                 Text(
-                  ubicacion.proximoDestino ?? '',
+                  (proximoDestino ? ubicacion.proximoDestino : ubicacion.destino) ?? '',
                   style: const TextStyle(fontSize: 14.0),
                 ),
-                Text(ubicacion.comunaProximoDestino ?? '',
-                    style: const TextStyle(fontSize: 14.0))
+                Text(
+                  (proximoDestino ? ubicacion.comunaProximoDestino : ubicacion.destinoComuna) ?? '',
+                    style: const TextStyle(fontSize: 14.0)),
               ],
             )),
         const SizedBox(width: 15.0),
@@ -277,7 +287,7 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
                       }
                     }
                   },
-                  child: const Icon(Icons.copy),
+                  child: const Icon(Icons.location_pin),
                 ),
               ],
             ))

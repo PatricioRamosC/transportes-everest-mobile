@@ -13,29 +13,12 @@ class BaseController {
   final GlobalKey<NavigatorState> navigatorKey;
 
   BaseController({required this.navigatorKey}) {
-    print('Inicio BaseController...');
-    // _createHttpClient()
-    // sslClient().then((client) {
-    //   print('Dentro del createHttpClient');
-    //   print(client);
-    //   apiService = ApiService(baseUrl: UrlConstants.baseUrl, client: client);
-    // });
+    debug('Inicio BaseController...');
     apiService = ApiServiceDio(
         baseUrl: UrlConstants.baseUrl,
         requestState: ScreensProvider(),
         navigatorKey: navigatorKey);
   }
-
-  /*
-  Future<HttpClient> _createHttpClient() async {
-    SecurityContext context = SecurityContext();
-    List<int> certificateData = await loadCertificate();
-    context.setTrustedCertificatesBytes(certificateData);
-    HttpClient client = HttpClient(context: context);
-    debug('Creando el httpClient con el certificado');
-    return client;
-  }
-  */
 
   Future<List<int>> loadCertificate() async {
     final data = await rootBundle.load('assets/localhost.pem');
@@ -52,8 +35,6 @@ class BaseController {
         (X509Certificate cert, String host, int port) => true;
 
     return client;
-    // IOClient ioClient = IOClient(client);
-    // return ioClient;
   }
 
   void debug(String msg) {
