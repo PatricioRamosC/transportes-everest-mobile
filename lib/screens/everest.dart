@@ -56,7 +56,7 @@ class _EverestState extends State<Everest> {
               }
             })),
       body: Center(
-        child: Text('Versión Beta 1.0.1'),
+        child: Text('Versión Beta 1.1.0'),
       ),
     );
   }
