@@ -155,6 +155,7 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
     return Expanded(
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Text("Solicitud: ${item.fechahorasolicitud}"),
+        Text("Pasajeros: ${item.pasajeros}"),
         (item.proximoDestinoId != item.destinoId ? 
         Text(
           "Pasajero: ${item.pasajero ?? ''}",
@@ -207,17 +208,10 @@ class _Viaje3State extends State<Viaje3> with WidgetsBindingObserver {
               shape: WidgetStatePropertyAll(BeveledRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5.0))))),
           onPressed: () {
-            // if (pendiente) {
-            //   item.estado = 'EP';
-            // } else {
-            //   item.estado = 'T';
-            // }
             viajeController.updateStatusPassanger(item.pasajeroId ?? 0)
                 .then(
                   (response) {
-                    setState(() {
-                      item = response?.payload?[0] as ViajeMobilePayload;
-                    });
+                    cargarInformacion();
                   }, 
                 onError: (error) {
                   viajeController.utils.toastError(error);
