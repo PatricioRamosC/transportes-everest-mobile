@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:fluttertoast/fluttertoast.dart";
 import "package:geocoding/geocoding.dart";
+import "package:intl/intl.dart";
 import "package:location/location.dart" as location_current;
 import "package:path_provider/path_provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -343,5 +344,17 @@ class Utils {
         );
       }
     });
+  }
+
+  String formatNumber(int value, decimalDigits, String symbol) {
+    String valor = NumberFormat.currency(
+      decimalDigits: decimalDigits, 
+      locale: 'es_CL', 
+      symbol: '').format(value);
+    return "$symbol $valor";
+  }
+
+  int unixTimestamp() {
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 }

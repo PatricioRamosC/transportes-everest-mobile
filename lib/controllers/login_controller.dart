@@ -28,6 +28,7 @@ class LoginController extends BaseController {
             login.payload?.accessToken ?? '',
             login.payload?.userId.toString() ?? '',
             login.payload?.clientId ?? '');
+        apiService.setKeyValue('login', userCode);
         return true;
       } else if (response?.statusCode == 204) {
         utils.toastInfo(Constants.mensajeNotFound);
@@ -43,4 +44,9 @@ class LoginController extends BaseController {
     }
     return false;
   }
+
+  Future<String?> getLogin() async {
+    return await apiService.getKeyStorage('login');
+  }
+
 }

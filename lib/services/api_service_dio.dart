@@ -138,6 +138,10 @@ class ApiServiceDio {
     await secureStorage.write(key: 'clientID', value: clientID);
   }
 
+  Future<void> setKeyValue(String key, String value) async {
+    await secureStorage.write(key: key, value: value);
+  }
+
   Future<String?> getAccessToken() async {
     return await getKeyStorage('accessToken');
   }

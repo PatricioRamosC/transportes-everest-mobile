@@ -19,6 +19,11 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     controller = LoginController(navigatorKey: widget.navigatorKey);
+    setState(() {
+      controller.getLogin().then((value) => {
+        _emailController.text = value ?? ''
+      });
+    });
   }
 
   @override

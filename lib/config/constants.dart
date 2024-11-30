@@ -1,6 +1,7 @@
 class Constants {
   static const String pendiente = "P";
   static const String enProceso = "EP";
+  static const String pasajeroRetirado = "PR";
   static const String terminado = "T";
   static const String finalizado = "F";
 

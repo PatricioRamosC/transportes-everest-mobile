@@ -1,15 +1,16 @@
-import 'dart:convert';
+// import 'dart:convert';
+
+import 'package:flutter/material.dart';
 
 import '../usuario.dart';
-import '../ubicacion.dart';
 import '../comuna.dart';
-import '../region.dart';
+// import '../region.dart';
 
 
 class ListadoRevisionViajes {
-  String message;
-  int errorCode;
-  List<RevisionViajesPayload> payload;
+  String? message;
+  int? errorCode;
+  List<RevisionViajesPayload>? payload;
 
   ListadoRevisionViajes({this.message, this.errorCode, this.payload});
 
@@ -17,49 +18,49 @@ class ListadoRevisionViajes {
     message = json['message'];
     errorCode = json['error_code'];
     if (json['payload'] != null) {
-      payload = new List<RevisionViajesPayload>();
+      payload = List.empty(growable: true);
       json['payload'].forEach((v) {
-        payload.add(new RevisionViajesPayload.fromJson(v));
+        debugPrint(v.toString());
+        payload!.add(RevisionViajesPayload.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
-    data['error_code'] = this.errorCode;
-    if (this.payload != null) {
-      data['payload'] = this.payload.map((v) => v.toJson()).toList();
-    }
+    final Map<String, dynamic> data = {
+      'message' : message,
+      'error_code' : errorCode,
+      'payload': payload?.map((v) => v.toJson()).toList()
+    };
     return data;
   }
 }
 
 class RevisionViajesPayload {
-  int id;
-  int idConductor;
-  String fechaHoraSolicitud;
-  String fechaHoraInicio;
-  String fechaHoraFin;
-  String origenLatitud;
-  String origenLongitud;
-  String destinoLatitud;
-  String destinoLongitud;
-  String distancia;
-  String costoTotal;
-  String metodoPago;
-  int calificacionConductor;
-  int calificacionCliente;
-  String comentarios;
-  String createdAt;
-  String updatedAt;
-  String estado;
-  String tipoConvenio;
-  String centroCosto;
-  int convenioId;
-  int tarifa;
-  Usuario conductor;
-  List<Ubicacion> ubicaciones;
+  int? id;
+  int? idConductor;
+  String? fechaHoraSolicitud;
+  String? fechaHoraInicio;
+  String? fechaHoraFin;
+  String? origenLatitud;
+  String? origenLongitud;
+  String? destinoLatitud;
+  String? destinoLongitud;
+  String? distancia;
+  String? costoTotal;
+  String? metodoPago;
+  int? calificacionConductor;
+  int? calificacionCliente;
+  String? comentarios;
+  String? createdAt;
+  String? updatedAt;
+  String? estado;
+  String? tipoConvenio;
+  String? centroCosto;
+  int? convenioId;
+  int? tarifa;
+  Usuario? conductor;
+  List<Ubicaciones>? ubicaciones;
 
   RevisionViajesPayload(
       {this.id,
@@ -111,66 +112,63 @@ class RevisionViajesPayload {
     convenioId = json['convenio_id'];
     tarifa = json['tarifa'];
     conductor = json['conductor'] != null
-        ? new Usuario.fromJson(json['conductor'])
+        ? Usuario.fromMap(json['conductor'])
         : null;
     if (json['ubicaciones'] != null) {
-      ubicaciones = new List<Ubicacion>();
+      ubicaciones = List.empty(growable: true);
       json['ubicaciones'].forEach((v) {
-        ubicaciones.add(new Ubicacion.fromJson(v));
+        ubicaciones?.add(Ubicaciones.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['id_conductor'] = this.idConductor;
-    data['fecha_hora_solicitud'] = this.fechaHoraSolicitud;
-    data['fecha_hora_inicio'] = this.fechaHoraInicio;
-    data['fecha_hora_fin'] = this.fechaHoraFin;
-    data['origen_latitud'] = this.origenLatitud;
-    data['origen_longitud'] = this.origenLongitud;
-    data['destino_latitud'] = this.destinoLatitud;
-    data['destino_longitud'] = this.destinoLongitud;
-    data['distancia'] = this.distancia;
-    data['costo_total'] = this.costoTotal;
-    data['metodo_pago'] = this.metodoPago;
-    data['calificacion_conductor'] = this.calificacionConductor;
-    data['calificacion_cliente'] = this.calificacionCliente;
-    data['comentarios'] = this.comentarios;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['estado'] = this.estado;
-    data['tipo_convenio'] = this.tipoConvenio;
-    data['centro_costo'] = this.centroCosto;
-    data['convenio_id'] = this.convenioId;
-    data['tarifa'] = this.tarifa;
-    if (this.conductor != null) {
-      data['conductor'] = this.conductor.toJson();
-    }
-    if (this.ubicaciones != null) {
-      data['ubicaciones'] = this.ubicaciones.map((v) => v.toJson()).toList();
-    }
+    final Map<String, dynamic> data = {
+      'id' : id,
+      'id_conductor' : idConductor,
+      'fecha_hora_solicitud' : fechaHoraSolicitud,
+      'fecha_hora_inicio' : fechaHoraInicio,
+      'fecha_hora_fin' : fechaHoraFin,
+      'origen_latitud' : origenLatitud,
+      'origen_longitud' : origenLongitud,
+      'destino_latitud' : destinoLatitud,
+      'destino_longitud' : destinoLongitud,
+      'distancia' : distancia,
+      'costo_total' : costoTotal,
+      'metodo_pago' : metodoPago,
+      'calificacion_conductor' : calificacionConductor,
+      'calificacion_cliente' : calificacionCliente,
+      'comentarios' : comentarios,
+      'created_at' : createdAt,
+      'updated_at' : updatedAt,
+      'estado' : estado,
+      'tipo_convenio' : tipoConvenio,
+      'centro_costo' : centroCosto,
+      'convenio_id' : convenioId,
+      'tarifa' : tarifa,
+      'conductor' : conductor?.toJson(),
+      'ubicaciones' : ubicaciones?.map((v) => v.toJson()).toList(),
+    };
     return data;
   }
 }
 
 
 class Ubicaciones {
-  int id;
-  int idViaje;
-  String direccion;
-  String referencia;
-  String tipo;
-  int idComuna;
-  String latitud;
-  String longitud;
-  int orden;
-  String createdAt;
-  String updatedAt;
-  String estado;
-  List<Usuario> pasajeros;
-  Comuna comuna;
+  int? id;
+  int? idViaje;
+  String? direccion;
+  String? referencia;
+  String? tipo;
+  int? idComuna;
+  String? latitud;
+  String? longitud;
+  int? orden;
+  String? createdAt;
+  String? updatedAt;
+  String? estado;
+  List<Pasajeros>? pasajeros;
+  Comuna? comuna;
 
   Ubicaciones(
       {this.id,
@@ -202,36 +200,71 @@ class Ubicaciones {
     updatedAt = json['updated_at'];
     estado = json['estado'];
     if (json['pasajeros'] != null) {
-      pasajeros = new List<Usuario>();
+      pasajeros = List.empty(growable: true);
       json['pasajeros'].forEach((v) {
-        pasajeros.add(new Usuario.fromJson(v));
+        pasajeros?.add(Pasajeros.fromJson(v));
       });
     }
     comuna =
-        json['comuna'] != null ? new Comuna.fromJson(json['comuna']) : null;
+        json['comuna'] != null ? Comuna.fromMap(json['comuna']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['id_viaje'] = this.idViaje;
-    data['direccion'] = this.direccion;
-    data['referencia'] = this.referencia;
-    data['tipo'] = this.tipo;
-    data['id_comuna'] = this.idComuna;
-    data['latitud'] = this.latitud;
-    data['longitud'] = this.longitud;
-    data['orden'] = this.orden;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['estado'] = this.estado;
-    if (this.pasajeros != null) {
-      data['pasajeros'] = this.pasajeros.map((v) => v.toJson()).toList();
-    }
-    if (this.comuna != null) {
-      data['comuna'] = this.comuna.toJson();
-    }
+    final Map<String, dynamic> data = {
+      'id' : id,
+      'id_viaje' : idViaje,
+      'direccion' : direccion,
+      'referencia' : referencia,
+      'tipo' : tipo,
+      'id_comuna' : idComuna,
+      'latitud' : latitud,
+      'longitud' : longitud,
+      'orden' : orden,
+      'created_at' : createdAt,
+      'updated_at' : updatedAt,
+      'estado' : estado,
+      'pasajeros' : pasajeros?.map((v) => v.toJson()).toList(),
+      'comuna' : comuna?.toJson(),
+    };
     return data;
   }
 }
 
+class Pasajeros {
+  int? id;
+  int? viajeId;
+  int? userId;
+  int? ubicacionId;
+  String? estado;
+  String? createdAt;
+  String? updatedAt;
+  Usuario? user;
+
+  Pasajeros({this.id, this.viajeId, this.userId, this.ubicacionId, this.estado, this.createdAt, this.updatedAt, this.user});
+
+  Pasajeros.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    viajeId = json['id_viaje'];
+    userId = json['user_id'];
+    ubicacionId = json['ubicacion_id'];
+    estado = json['estado'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    user = json['user'] != null ? Usuario.fromMap(json['user']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'id' : id,
+      'id_viaje' : viajeId,
+      'user_id' : userId,
+      'ubicacion_id' : ubicacionId,
+      'estado' : estado,
+      'created_at' : createdAt,
+      'updated_at' : updatedAt,
+      'user' : user?.toJson()
+    };
+    return data;
+  }
+
+}

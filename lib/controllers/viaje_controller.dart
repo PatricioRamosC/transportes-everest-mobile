@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-// import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/base_controller.dart';
 import 'package:transportes_everest_mobile/entidades/enlace_response.dart';
+import 'package:transportes_everest_mobile/entidades/listado-revision-viajes/listado_revision_viajes.dart';
 import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 import 'package:transportes_everest_mobile/entidades/viaje_mobile.dart';
 import '../config/url.dart';
 import '../entidades/enlace_request.dart';
 import '../entidades/viaje.dart';
-import '../entidades/viajes_pendientes/viajes_pendientes.dart';
 
 class ViajeController extends BaseController {
   ViajeController({required super.navigatorKey});
@@ -164,18 +164,38 @@ class ViajeController extends BaseController {
   ///
   /// Propósito: Actualizar estado del viaje.
   ///
-  Future<ViajeMobile?> updateStatusPassanger(int id) async {
+  Future<RevisionViajesPayload?> updateStatusPassanger(int id) async {
     try {
       Response? response = await apiService.put(
           "${UrlConstants.viajesPasajeroUrl}/$id", null, null);
 
       if (response?.statusCode == 200) {
-          return ViajeMobile.fromJson(response?.data);
+          return RevisionViajesPayload.fromJson(response?.data);
       } else {
         utils.toastErrorJson(response?.data ?? '');
       }
     } catch (e) {
       debug(e.toString());
+      utils.toastError(e.toString());
+    }
+    return null;
+  }
+
+  ///
+  /// Propósito: Actualizar estado del viaje.
+  ///
+  Future<RevisionViajesPayload?> updateStatusLocation(int id) async {
+    try {
+      Response? response = await apiService.put(
+          "${UrlConstants.viajesUbicacionUrl}/$id", null, null);
+
+      if (response?.statusCode == 200) {
+          return RevisionViajesPayload.fromJson(response?.data);
+      } else {
+        utils.toastErrorJson(response?.data ?? '');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
       utils.toastError(e.toString());
     }
     return null;
@@ -224,4 +244,33 @@ class ViajeController extends BaseController {
             ?.firstWhere((x) => x.estado == "P", orElse: () => Pasajero()) ??
         Pasajero();
   }
+
+  Future<ListadoRevisionViajes?> getViajesV2() async {
+    try {
+      int conductor = await apiService.getIntStorage("userID");
+      Response? response = await apiService.get(
+          "${UrlConstants.viajesV2Url}/$conductor", null);
+
+      debug('obtenerViajes statusCode ${response?.statusCode}');
+      if (response?.statusCode == 200) {
+        try {
+          return ListadoRevisionViajes.fromJson(response?.data);
+        } catch (e, stackTrace) {
+          debug(stackTrace.toString());
+          debug(e.toString());
+        }
+      } else if (response?.statusCode == 204) {
+        utils.toastInfo(Constants.mensajeNotFound);
+      } else {
+        utils.toastErrorJson(response?.data.toString() ?? '{}');
+      }
+    } catch (e, stackTrace) {
+      debug(stackTrace.toString());
+      utils.toastError(e.toString());
+    }
+    return ListadoRevisionViajes();
+  }
+
+
+
 }

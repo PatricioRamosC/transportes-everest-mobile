@@ -8,6 +8,7 @@ import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
 import 'package:transportes_everest_mobile/screens/vale2.dart';
 import 'package:transportes_everest_mobile/screens/viaje3.dart';
+import 'package:transportes_everest_mobile/screens/viaje_en_curso.dart';
 import 'package:transportes_everest_mobile/utils/theme.dart';
 
 void main() {
@@ -108,7 +109,7 @@ class _MyAppState extends State<MyApp> {
             builder: (_) => Everest(navigatorKey: navigatorKey));
       case '/vale':
         return MaterialPageRoute(
-            builder: (_) => Viaje3(
+            builder: (_) => ViajeEnCurso(
                   navigatorKey: navigatorKey,
                 ));
       // case '/tripDetails':
