@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 
 import '../config/constants.dart';
 import '../controllers/viaje_controller.dart';

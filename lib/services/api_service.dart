@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:transportes_everest_mobile/entidades/response/http_response_data.dart';
 import '../config/url.dart';
@@ -24,7 +25,7 @@ class ApiService {
     if (accessToken != null) {
       request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $accessToken');
     } else {
-      debugPrint('Sin token');
+      debugdebugPrint('Sin token');
     }
 
     // Puedes agregar más configuraciones aquí si es necesario, como API-Key
@@ -51,7 +52,7 @@ class ApiService {
     Duration timeout = const Duration(seconds: 10),
   }) async {
     Uri uri = Uri.parse(UrlConstants.baseUrl + endpoint);
-    print('URI: ${uri.toString()}');
+    debugPrint('URI: ${uri.toString()}');
     HttpClientRequest request;
 
     if (method.toLowerCase().trim() == "get") {
@@ -75,7 +76,7 @@ class ApiService {
       String respuesta = await response.transform(utf8.decoder).join();
       return respuesta;
     } else {
-      print('statusCode : ${response.statusCode}');
+      debugPrint('statusCode : ${response.statusCode}');
     }
 
     return null;
@@ -87,7 +88,7 @@ class ApiService {
     Duration timeout = const Duration(seconds: 10),
   }) async {
     Uri uri = Uri.parse(UrlConstants.baseUrl + endpoint);
-    print('URI: ${uri.toString()}');
+    debugPrint('URI: ${uri.toString()}');
     HttpClientRequest request = await client.get(uri.host, uri.port, uri.path);
 
     if (headers != null) {
@@ -101,7 +102,7 @@ class ApiService {
       String respuesta = await response.transform(utf8.decoder).join();
       return respuesta;
     } else {
-      print('statusCode : ${response.statusCode}');
+      debugPrint('statusCode : ${response.statusCode}');
     }
 
     return null;
@@ -114,7 +115,7 @@ class ApiService {
     Duration timeout = const Duration(seconds: 10),
   }) async {
     Uri uri = Uri.parse(UrlConstants.baseUrl + endpoint);
-    print('URI: ${uri.toString()}');
+    debugPrint('URI: ${uri.toString()}');
     HttpClientRequest request = await client.postUrl(uri);
 
     if (headers != null) {
@@ -123,10 +124,10 @@ class ApiService {
       });
     }
     await setHeaders(request);
-    print('request.headers');
-    print(request.headers);
-    print('body');
-    print(body);
+    debugPrint('request.headers');
+    debugPrint(request.headers.toString());
+    debugPrint('body');
+    debugPrint(body);
     request.write(body);
     HttpClientResponse response = await request.close();
     return (await handleResponse(response));
@@ -138,33 +139,33 @@ class ApiService {
         responseType: ResponseType.unknown, statusCode: response.statusCode);
 
     if (contentType != null) {
-      print('Content-Type: ${contentType.mimeType}');
+      debugPrint('Content-Type: ${contentType.mimeType}');
       if (contentType.mimeType == 'application/json') {
         var json = await response.transform(const Utf8Decoder()).join();
         responseData.setJsonResponse(json);
-        print('JSON recibido: $json');
+        debugPrint('JSON recibido: $json');
       } else if (contentType.mimeType == 'text/html') {
         var html = await response.transform(const Utf8Decoder()).join();
         responseData.setHtmlResponse(html);
-        print('HTML recibido: $html');
+        debugPrint('HTML recibido: $html');
       } else if (contentType.mimeType.startsWith('image/')) {
         var image = await response.fold<List<int>>([], (a, b) => a..addAll(b));
         responseData.setImageResponse(image);
-        print('Imagen recibida con ${image.length} bytes');
+        debugPrint('Imagen recibida con ${image.length} bytes');
       } else if (contentType.mimeType == 'multipart/form-data') {
         var boundary = contentType.parameters['boundary'];
         if (boundary != null) {
-          print('Boundary detectado: $boundary');
+          debugPrint('Boundary detectado: $boundary');
           responseData.setMultipartResponse(
               await processMultipartResponse(response, boundary));
         } else {
-          print('No se pudo encontrar el boundary en el Content-Type');
+          debugPrint('No se pudo encontrar el boundary en el Content-Type');
         }
       } else {
-        print('Tipo de contenido no manejado: ${contentType.mimeType}');
+        debugPrint('Tipo de contenido no manejado: ${contentType.mimeType}');
       }
     } else {
-      print('No se pudo determinar el Content-Type.');
+      debugPrint('No se pudo determinar el Content-Type.');
     }
     return responseData;
   }
@@ -199,7 +200,7 @@ class ApiService {
 
         // Si es un archivo (tiene filename), guardamos el contenido como bytes
         if (fileName != null) {
-          print('Archivo detectado: $fileName');
+          debugPrint('Archivo detectado: $fileName');
           var fileBytes =
               utf8.encode(content); // Puedes procesarlo directamente como bytes
 
@@ -211,7 +212,7 @@ class ApiService {
             };
           }
         } else {
-          print('Campo de formulario detectado: $fieldName');
+          debugPrint('Campo de formulario detectado: $fieldName');
           if (fieldName != null) {
             parsedData[fieldName] = content; // Guardamos el valor del campo
           }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:transportes_everest_mobile/entidades/listado-revision-viajes/listado_revision_viajes.dart';
-import 'package:uuid/uuid.dart';
 import '../config/constants.dart';
 import '../controllers/viaje_controller.dart';
 import '../entidades/enlace_request.dart';
@@ -17,8 +16,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   late ViajeController viajeController;
   ListadoRevisionViajes viajes = ListadoRevisionViajes();
   bool isLoading = false;
-  Uuid uuid = const Uuid();
-  Key uniqueId = "uuid";
+  // late TabController tabController;
 
   @override
   void initState() {
@@ -26,12 +24,14 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     WidgetsBinding.instance.addObserver(this);
     viajeController = ViajeController(navigatorKey: widget.navigatorKey);
     debugPrint('Inicio State');
+    // tabController = TabController(length: 3); // Asegúrate de que 'length' coincida con el número de tabs
     cargarInformacion();
   }
   
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // tabController.dispose();
     super.dispose();
   }
 
@@ -72,13 +72,11 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
             ],
           ),
           body: Center(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : TabBarView(children: [
-                    getViajes(viajes.payload!.where((item) => item.estado == Constants.pendiente).toList()),
-                    getViajes(viajes.payload!.where((item) => item.estado == Constants.enProceso).toList()),
-                    getViajes(viajes.payload!.where((item) => item.estado == Constants.terminado).toList())
-                  ]),
+            child: TabBarView(children: [
+                    getViajes(Constants.pendiente),
+                    getViajes(Constants.enProceso),
+                    getViajes(Constants.terminado)
+                ]),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -91,12 +89,17 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     );
   }
 
-  ListView getViajes(List<RevisionViajesPayload> lista) {
-    if (lista.isEmpty) {
-      return ListView();
+  ListView getViajes(String estado) {
+    try {
+
+    List<RevisionViajesPayload> lista = List.empty();
+    if (viajes.payload != null) {
+      lista = viajes.payload!.where((x) => x.estado == estado).toList();
     }
+    // if (lista.isEmpty) {
+    //   return ListView();
+    // }
     return ListView.builder(
-      key: ValueKey(value),
       itemCount: lista.length,
       itemBuilder: (context, index) {
         try {
@@ -132,6 +135,11 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
         }
       },
     );
+    } catch(e, stackTrace) {
+      debugPrint("DEBUG: Falla en getViajes procesando los viajes con estado [$estado].");
+      debugPrint(stackTrace.toString());
+    }
+    return ListView();
   }
 
   Expanded getViaje(RevisionViajesPayload item) {
@@ -273,13 +281,14 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   void actualizarUbicacion(Ubicaciones ubicacion) async {
     RevisionViajesPayload? response = await viajeController.updateStatusLocation(ubicacion.id ?? 0);
     if (response != null) {
-      int indexFind = viajes.payload?.indexWhere((ubicacion) => ubicacion.id == response.id) ?? 0;
-      if (indexFind != -1) {
-        setState(() {
-          // viajes.payload?[indexFind] = response;
-          viajes.payload = List.from(viajes.payload ?? [])..[indexFind] = response;
-        });
-      }
+      cargarInformacion();
+      // int indexFind = viajes.payload?.indexWhere((ubicacion) => ubicacion.id == response.id) ?? 0;
+      // if (indexFind != -1) {
+      //   setState(() {
+      //     // viajes.payload?[indexFind] = response;
+      //     viajes.payload = List.from(viajes.payload ?? [])..[indexFind] = response;
+      //   });
+      // }
       // viajes.payload.map((x) => debugPrint("${x.id} ${x.estado}"))
     }
   }

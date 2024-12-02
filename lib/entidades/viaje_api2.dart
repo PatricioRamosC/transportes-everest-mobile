@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ViajeApi2 {
   String? message;
   int? errorCode;
@@ -11,7 +13,7 @@ class ViajeApi2 {
     if (jsonText['payload'] != null) {
       payload = List.empty(growable: true);
       jsonText['payload'].forEach((v) {
-        print(v.toString());
+        debugPrint(v.toString());
         payload!.add(ViajePayload.fromJson(v));
       });
     }

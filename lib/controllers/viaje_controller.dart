@@ -203,27 +203,30 @@ class ViajeController extends BaseController {
 
   Future<bool?> createLink(EnlaceRequest item) async {
     try {
-      Response? response = await apiService.sendRequest(
-          method: 'POST',
-          endpoint: UrlConstants.enlaceUrl,
-          params: item.toJson());
+      Response? response = await apiService.post(
+          UrlConstants.enlaceUrl, item.toJson(), null);
 
       if (response?.statusCode == 200) {
-        debug(response!.data);
-        Map<String, dynamic> json = jsonDecode(response.data);
-        if (json.containsKey("payload")) {
+        debugPrint('DEBUG: recibiendo el response del createLink...');
+        debugPrint(jsonEncode(response!.data));
+        debugPrint('DEBUG: response del createLink recibido.');
+        if (response.data.containsKey("payload")) {
           String phone;
-          EnlaceResponse enlaceResponse =
-              EnlaceResponse.fromMap(json['payload']);
-          phone = "+${enlaceResponse.phone ?? ''}";
+          EnlaceResponse enlaceResponse = EnlaceResponse.fromMap(response.data['payload']);
+          phone = utils.phoneFormatted(enlaceResponse.phone ?? '');
           utils.toastInfo(enlaceResponse.message ?? '');
           utils.send(phone, enlaceResponse.messageUser ?? '');
           return true;
         }
       } else {
-        utils.toastErrorJson(response?.data ?? '');
+        debugPrint(jsonEncode(response));
+        debugPrint(response?.statusCode.toString());
+        utils.toastErrorJson(jsonEncode(response?.data ?? ''));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('DEBUG: createLink');
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
       utils.toastError(e.toString());
     }
     return false;

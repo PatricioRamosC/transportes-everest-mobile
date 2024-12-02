@@ -6,7 +6,6 @@ import 'package:transportes_everest_mobile/entidades/viaje.dart';
 import 'package:transportes_everest_mobile/entidades/viaje_api2.dart';
 import 'package:transportes_everest_mobile/entidades/viajes_pendientes/viajes_pendientes.dart';
 import '../entidades/enlace_request.dart';
-import '../entidades/viaje_mobile.dart';
 
 class Vale2 extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;

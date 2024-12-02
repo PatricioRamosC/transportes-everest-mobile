@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transportes_everest_mobile/providers/screens_provider.dart';
 import 'package:transportes_everest_mobile/providers/session_provider.dart';
 import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
-import 'package:transportes_everest_mobile/screens/vale2.dart';
-import 'package:transportes_everest_mobile/screens/viaje3.dart';
+// import 'package:transportes_everest_mobile/screens/vale2.dart';
+// import 'package:transportes_everest_mobile/screens/viaje3.dart';
 import 'package:transportes_everest_mobile/screens/viaje_en_curso.dart';
 import 'package:transportes_everest_mobile/utils/theme.dart';
 
@@ -31,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = ColorScheme(
+/*     ColorScheme colorScheme = ColorScheme(
       // Definir colores primarios y secundarios
       primary: Colors.black54, // Color para los botones y el icono.
       primaryContainer: Colors.blue.shade700,
@@ -49,7 +47,7 @@ class _MyAppState extends State<MyApp> {
       // Opcional: definir un brillo para los colores claros y oscuros
       brightness: Brightness.light,
     );
-
+ */
     TextTheme textTheme = const TextTheme(
       // Definir estilos de texto para diferentes encabezados
       displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

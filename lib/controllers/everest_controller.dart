@@ -14,7 +14,7 @@ class EverestController extends BaseController {
     Response? response =
         await apiService.get("${UrlConstants.menuItemUrl}/mobile", null);
     if (response != null) {
-      print(response.data);
+      debugPrint(response.data.toString());
       options = MenuOption.fromJson(response.data).payload;
     }
     return options;
