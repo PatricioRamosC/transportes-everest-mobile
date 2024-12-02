@@ -76,14 +76,14 @@ android {
             // Añade esta tarea para cambiar el nombre del APK
             applicationVariants.all { variant ->
                 variant.outputs.all { output ->
-                    if (variant.buildType.name == "release") {
-                        // def newApkName = "transportes_everest_${variant.versionName}.apk"
+                    //if (variant.buildType.name == "release") {
                         outputFileName = newApkName
-                    }
+                    //}
                 }
             }
         }
     }
+
 }
 
 flutter {
