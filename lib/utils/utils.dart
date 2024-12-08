@@ -166,6 +166,7 @@ class Utils {
           await sendSMS(message: msg, recipients: recipents, sendDirect: true)
               .catchError((onError) {
         debugPrint(onError.toString());
+        toastError(onError.toString());
         return "${Constants.mensajeErrorSendSMS} : ${onError.toString()}";
       });
       return result;
