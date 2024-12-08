@@ -149,6 +149,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
       debugPrint("DEBUG: ${ubicacion.direccion} - ${ubicacion.estado} - ${ubicacion.tipo} - ${ubicacion.pasajeros?.length}");
       return Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Text("Viaje Nro: ${item.id}"),
           Text("Solicitud: ${item.fechaHoraSolicitud}"),
           Text("Pasajeros: ${getPasajeros(item)}"),
           Text("Tarifa: ${viajeController.utils.formatNumber(item.tarifa ?? 0, 0, "\$")}"),
@@ -211,7 +212,10 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
                             verticalAlignment: TableCellVerticalAlignment.middle, 
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(onPressed: () {
+                              child: 
+                              ubicacion.pasajeros?[index].accion == Constants.accionBajada ?
+                              const Text("Baja") :
+                              ElevatedButton(onPressed: () {
                                 viajeController.utils.openPhoneCall(phoneFormatted(ubicacion.pasajeros?[index].user?.phone ?? ''));
                               }, 
                               child: Text(phoneFormatted(ubicacion.pasajeros?[index].user?.phone ?? ''),
@@ -220,6 +224,12 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
                 ])
             )
           )),
+          activoBotonEsperando(item) ? 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center, 
+            mainAxisSize: MainAxisSize.max,
+            children: [botonEsperando(item), const SizedBox(width: 16.0), botonViaje(item)],
+          ) :
           botonViaje(item)
         ]));
     } catch (e, stackTrace) {
@@ -239,13 +249,18 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
       return "Terminar viaje";
     }
     int pasajeros = 0;
+    String accion = Constants.accionBajada;
     if (ubicacion.pasajeros != null) {
       pasajeros = ubicacion.pasajeros!.length;
+      List<Pasajeros> lista = ubicacion.pasajeros!.where((x) => x.accion == Constants.accionSubida).toList();
+      if (lista.isNotEmpty) {
+        accion = Constants.accionSubida;
+      }
     }
     if (ubicacion.estado == Constants.pendiente) {
       return "En camino";
     } else if (ubicacion.estado == Constants.enProceso) {
-      return "Recoger pasajero${pasajeros > 1 ? '(s)' : ''}";
+      return "${accion == Constants.accionSubida ? 'Recoger' : 'Dejar'} pasajero${pasajeros > 1 ? 's' : ''}";
     }
     return "Iniciar";
   }
@@ -277,6 +292,28 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
         ],)
     );
   }
+
+  activoBotonEsperando(RevisionViajesPayload item) {
+    Ubicaciones ubicacion = getUbicacion(item);
+    List<Pasajeros> lista = ubicacion.pasajeros?.where((element) => element.accion == Constants.accionSubida).toList() ?? List.empty();
+    return (lista.isNotEmpty && ubicacion.estado == Constants.enProceso);
+  }
+
+  botonEsperando(RevisionViajesPayload item) {
+    Ubicaciones ubicacion = getUbicacion(item);
+    return  ElevatedButton(onPressed: () async {
+          viajeController.setWaiting(ubicacion);
+        },
+        child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center, 
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.hourglass_bottom_rounded),
+          Text("Esperando", style: TextStyle(fontSize: 18.0),)
+        ],)
+    );
+  }
+
 
   void actualizarUbicacion(Ubicaciones ubicacion) async {
     RevisionViajesPayload? response = await viajeController.updateStatusLocation(ubicacion.id ?? 0);

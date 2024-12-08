@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:transportes_everest_mobile/config/constants.dart';
 import 'package:transportes_everest_mobile/controllers/base_controller.dart';
 import 'package:transportes_everest_mobile/entidades/enlace_response.dart';
@@ -186,8 +187,13 @@ class ViajeController extends BaseController {
   ///
   Future<RevisionViajesPayload?> updateStatusLocation(int id) async {
     try {
+      LocationData? location = await utils.getLocation();
+      Map<String, dynamic> data = {
+        'latitud': location?.latitude ?? 0.0,
+        'longitud': location?.longitude ?? 0.0
+      };
       Response? response = await apiService.put(
-          "${UrlConstants.viajesUbicacionUrl}/$id", null, null);
+          "${UrlConstants.viajesUbicacionUrl}/$id", data, null);
 
       if (response?.statusCode == 200) {
           return RevisionViajesPayload.fromJson(response?.data);
@@ -274,6 +280,35 @@ class ViajeController extends BaseController {
     return ListadoRevisionViajes();
   }
 
-
+  void setWaiting(Ubicaciones ubicacion) async {
+    try {
+      LocationData? location = await utils.getLocation();
+      Map<String, dynamic> data = {
+        'ubicacion_id': ubicacion.id,
+        'latitud': location?.latitude ?? 0.0,
+        'longitud': location?.longitude ?? 0.0
+      };
+      
+      Response? response = await apiService.post(UrlConstants.viajesEsperandoUrl, data, null);
+      debug('setWaiting statusCode ${response?.statusCode}');
+      if (response?.statusCode == 200) {
+        try {
+          if (response?.data != null) {
+            debugPrint(jsonEncode(response?.data));
+          }
+        } catch (e, stackTrace) {
+          debug(stackTrace.toString());
+          debug(e.toString());
+        }
+      } else if (response?.statusCode == 204) {
+        utils.toastInfo(Constants.mensajeNotFound);
+      } else {
+        utils.toastErrorJson(response?.data.toString() ?? '{}');
+      }
+    } catch (e, stackTrace) {
+      debug(stackTrace.toString());
+      utils.toastError(e.toString());
+    }
+  }
 
 }

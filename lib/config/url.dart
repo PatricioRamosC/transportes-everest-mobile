@@ -9,5 +9,6 @@ class UrlConstants {
   static const String viajesPasajeroUrl = "/api/viajes-pasajero";
   static const String viajesUbicacionUrl = "/api/viajes-ubicacion";
   static const String viajesConductorUrl = "/api/viajes-conductor";
+  static const String viajesEsperandoUrl = "/api/viajes-esperando";
   static const String enlaceUrl = "/api/enlace";
 }

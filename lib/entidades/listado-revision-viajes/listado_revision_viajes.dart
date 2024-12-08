@@ -238,9 +238,10 @@ class Pasajeros {
   String? estado;
   String? createdAt;
   String? updatedAt;
+  String? accion;
   Usuario? user;
 
-  Pasajeros({this.id, this.viajeId, this.userId, this.ubicacionId, this.estado, this.createdAt, this.updatedAt, this.user});
+  Pasajeros({this.id, this.viajeId, this.userId, this.ubicacionId, this.estado, this.createdAt, this.updatedAt, this.user, this.accion});
 
   Pasajeros.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -248,6 +249,7 @@ class Pasajeros {
     userId = json['user_id'];
     ubicacionId = json['ubicacion_id'];
     estado = json['estado'];
+    accion = json['accion'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? Usuario.fromMap(json['user']) : null;
@@ -260,6 +262,7 @@ class Pasajeros {
       'user_id' : userId,
       'ubicacion_id' : ubicacionId,
       'estado' : estado,
+      'accion' : accion,
       'created_at' : createdAt,
       'updated_at' : updatedAt,
       'user' : user?.toJson()

@@ -8,6 +8,9 @@ class Constants {
   static const String ubicacionOrigen = "O";
   static const String ubicacionDestino = "D";
 
+  static const String accionSubida = "S";
+  static const String accionBajada = "B";
+
   static const String mapaTitulo = "Mapa";
   static const String mapaMarkerId = "Mapa";
   static const String mapaMarkerTituloDestino = "Destino";

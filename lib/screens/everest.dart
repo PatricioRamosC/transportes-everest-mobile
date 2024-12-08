@@ -29,7 +29,7 @@ class _EverestState extends State<Everest> {
         child: FutureBuilder(
             future: controller.fetchMenuOptions(),
             builder: (context, snapshot) {
-              print('builder $snapshot');
+              debugPrint('builder $snapshot');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
@@ -56,7 +56,7 @@ class _EverestState extends State<Everest> {
               }
             })),
       body: const Center(
-        child: Text('Versión Beta 1.2.0'),
+        child: Text('Versión Beta 1.3.0'),
       ),
     );
   }
