@@ -69,10 +69,10 @@ class _LoginPageState extends State<LoginPage> {
                       .login(_emailController.text, _passwordController.text)
                       .then((result) {
                     if (result) {
-                      print('Login OK');
+                      debugPrint('Login OK');
                       widget.navigatorKey.currentState!.pushNamed('/menu');
                     } else {
-                      print('Login NOK');
+                      debugPrint('Login NOK');
                     }
                   });
                   if (_formKey.currentState!.validate()) {}

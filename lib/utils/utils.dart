@@ -7,6 +7,7 @@ import "package:geocoding/geocoding.dart";
 import "package:intl/intl.dart";
 import "package:location/location.dart" as location_current;
 import "package:path_provider/path_provider.dart";
+import "package:permission_handler/permission_handler.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -161,7 +162,7 @@ class Utils {
   Future<String?> sendList(List<String> recipents, String msg) async {
     debugPrint("Enviando SMS...");
     bool canSend = await canSendSMS();
-    if (canSend) {
+    if (canSend && await checkSmsPermission()) {
       String result =
           await sendSMS(message: msg, recipients: recipents, sendDirect: true)
               .catchError((onError) {
@@ -173,6 +174,15 @@ class Utils {
     } else {
       return null;
     }
+  }
+
+  Future<bool> checkSmsPermission() async {
+
+    var status = (await Permission.sms.status);
+    if (status.isDenied) {
+      status = await Permission.sms.request();
+    }
+    return (status.isGranted);
   }
 
   Future<location_current.LocationData?> getLocation() async {

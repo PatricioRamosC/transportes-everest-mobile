@@ -16,6 +16,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   late ViajeController viajeController;
   ListadoRevisionViajes viajes = ListadoRevisionViajes();
   bool isLoading = false;
+  String conductor = "";
   // late TabController tabController;
 
   @override
@@ -39,6 +40,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     debugPrint("DEBUG: Consultando información...");
     ListadoRevisionViajes?  response = await viajeController.getViajesV2();
     if (response != null) {
+      conductor = response.payload?.first.conductor?.name ?? '';
       setState(() {
         viajes = response;
       });
@@ -146,13 +148,30 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     try {
       item.ubicaciones!.sort((a, b) => a.id!.compareTo(b.id!));
       Ubicaciones ubicacion = getUbicacion(item);
+      Ubicaciones destinoFinal = getDestino(item);
       debugPrint("DEBUG: ${ubicacion.direccion} - ${ubicacion.estado} - ${ubicacion.tipo} - ${ubicacion.pasajeros?.length}");
       return Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Text("Viaje Nro: ${item.id}"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+                Text("Viaje Nro: ${item.id}"),
+                item.comentarios != null && item.comentarios!.isNotEmpty ?
+                  IconButton(
+                    onPressed: () {
+                      showObservacionesDialog(context, item.comentarios ?? '');
+                    }, 
+                    icon: const Icon(Icons.info, size: 30),
+                    color: Colors.red
+                  ) : const SizedBox.shrink(),
+              ]),
+          Text("Tipo de Servicio: ${item.convenioId != 0 ? item.convenioId : 'Particular'}"),
           Text("Solicitud: ${item.fechaHoraSolicitud}"),
           Text("Pasajeros: ${getPasajeros(item)}"),
           Text("Tarifa: ${viajeController.utils.formatNumber(item.tarifa ?? 0, 0, "\$")}"),
+          destinoFinal.id != ubicacion.id ?
+          Text("Destino: ${destinoFinal.direccion} - ${destinoFinal.comuna?.comuna}") :
+          const SizedBox.shrink(),
           const Divider(color: Colors.grey, thickness: 1.0),
           (ubicacion.direccion != null && ubicacion.direccion!.isEmpty ? const Text('data') :
             Row(
@@ -275,6 +294,10 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
       item.ubicaciones!.firstWhere((x) => x.estado == Constants.pendiente || x.estado == Constants.enProceso, orElse: () => Ubicaciones() );
   }
 
+  Ubicaciones getDestino(RevisionViajesPayload viaje) {
+    return viaje.ubicaciones!.firstWhere((x) => x.tipo == Constants.ubicacionDestino, orElse: () => Ubicaciones());
+  }
+
   ElevatedButton botonViaje(RevisionViajesPayload item) {
     Ubicaciones ubicacion = getUbicacion(item);
     return  ElevatedButton(onPressed: () {
@@ -318,6 +341,9 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   void actualizarUbicacion(Ubicaciones ubicacion) async {
     RevisionViajesPayload? response = await viajeController.updateStatusLocation(ubicacion.id ?? 0);
     if (response != null) {
+      if (ubicacion.estado == Constants.pendiente) {
+        notificarEnRuta(ubicacion);
+      }
       cargarInformacion();
       // int indexFind = viajes.payload?.indexWhere((ubicacion) => ubicacion.id == response.id) ?? 0;
       // if (indexFind != -1) {
@@ -342,6 +368,16 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     if ((estado ?? false) == false) {
       viajeController.utils.toastError(Constants.mensajeCantSendSMS);
     }
+  }
+
+  void notificarEnRuta(Ubicaciones ubicacion) {
+    List<String> recipents = List.empty(growable: true);
+    ubicacion.pasajeros?.forEach((item) {
+      if (item.accion == Constants.accionSubida && item.user != null) {
+        recipents.add(viajeController.utils.phoneFormatted(item.user?.phone ?? ''));
+      }
+    });
+    viajeController.utils.sendList(recipents, "Mi nombre es $conductor de Transportes Everest, voy en camino.");
   }
 
   String phoneFormatted(String phone) {
@@ -381,4 +417,24 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     return usuarios.length;
   }
 
+  void showObservacionesDialog(BuildContext context, String observaciones) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Observaciones'),
+          content: SingleChildScrollView(
+            child: Text(observaciones)
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cerrar'))
+          ],
+        );
+      }
+    );
+  }
 }
