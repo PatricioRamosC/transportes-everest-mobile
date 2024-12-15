@@ -326,6 +326,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
     Ubicaciones ubicacion = getUbicacion(item);
     return  ElevatedButton(onPressed: () async {
           viajeController.setWaiting(ubicacion);
+          notificarEsperando(ubicacion);
         },
         child: const Row(
         mainAxisAlignment: MainAxisAlignment.center, 
@@ -371,13 +372,21 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   }
 
   void notificarEnRuta(Ubicaciones ubicacion) {
+    viajeController.utils.sendList(getDestinatarios(ubicacion), "Mi nombre es $conductor de Transportes Everest, voy en camino.");
+  }
+
+  void notificarEsperando(Ubicaciones ubicacion) {
+    viajeController.utils.sendList(getDestinatarios(ubicacion), "He llegdo y me encuentro esperando por usted.");
+  }
+
+  List<String> getDestinatarios(Ubicaciones ubicacion) {
     List<String> recipents = List.empty(growable: true);
     ubicacion.pasajeros?.forEach((item) {
       if (item.accion == Constants.accionSubida && item.user != null) {
         recipents.add(viajeController.utils.phoneFormatted(item.user?.phone ?? ''));
       }
     });
-    viajeController.utils.sendList(recipents, "Mi nombre es $conductor de Transportes Everest, voy en camino.");
+    return recipents;
   }
 
   String phoneFormatted(String phone) {
