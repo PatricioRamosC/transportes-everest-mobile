@@ -165,7 +165,7 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
                     color: Colors.red
                   ) : const SizedBox.shrink(),
               ]),
-          Text("Tipo de Servicio: ${item.convenioId != 0 ? item.convenioId : 'Particular'}"),
+          Text("Tipo de Servicio: ${item.convenio?.convenio ?? 'Particular'}"),
           Text("Solicitud: ${item.fechaHoraSolicitud}"),
           Text("Pasajeros: ${getPasajeros(item)}"),
           Text("Tarifa: ${viajeController.utils.formatNumber(item.tarifa ?? 0, 0, "\$")}"),

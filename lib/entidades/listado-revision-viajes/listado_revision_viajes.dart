@@ -61,6 +61,7 @@ class RevisionViajesPayload {
   int? tarifa;
   Usuario? conductor;
   List<Ubicaciones>? ubicaciones;
+  Convenio? convenio;
 
   RevisionViajesPayload(
       {this.id,
@@ -113,6 +114,9 @@ class RevisionViajesPayload {
     tarifa = json['tarifa'];
     conductor = json['conductor'] != null
         ? Usuario.fromMap(json['conductor'])
+        : null;
+    convenio = json['convenio'] != null
+        ? Convenio.fromJson(json['convenio'])
         : null;
     if (json['ubicaciones'] != null) {
       ubicaciones = List.empty(growable: true);
@@ -270,4 +274,39 @@ class Pasajeros {
     return data;
   }
 
+}
+
+class Convenio {
+  int? id;
+  String? convenio;
+  String? razonSocial;
+  String? rut;
+  String? createdAt;
+  String? updatedAt;
+
+  Convenio({this.id, this.convenio, this.razonSocial, this.rut, this.createdAt, this.updatedAt});
+
+  Convenio.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    convenio = json['convenio'];
+    razonSocial = json['razonSocial'];
+    rut = json['rut'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    // user = json['user'] != null ? Usuario.fromMap(json['user']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'id' : id,
+      'convenio' : convenio,
+      'razonSocial' : razonSocial,
+      'rut' : rut,
+      'created_at' : createdAt,
+      'updated_at' : updatedAt
+      // 'user' : user?.toJson()
+    };
+    return data;
+  }
+  
 }
