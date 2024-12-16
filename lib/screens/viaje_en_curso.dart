@@ -342,18 +342,10 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   void actualizarUbicacion(Ubicaciones ubicacion) async {
     RevisionViajesPayload? response = await viajeController.updateStatusLocation(ubicacion.id ?? 0);
     if (response != null) {
-      if (ubicacion.estado == Constants.pendiente) {
+      if (ubicacion.estado == Constants.pendiente && ubicacion.tipo != Constants.ubicacionDestino) {
         notificarEnRuta(ubicacion);
       }
       cargarInformacion();
-      // int indexFind = viajes.payload?.indexWhere((ubicacion) => ubicacion.id == response.id) ?? 0;
-      // if (indexFind != -1) {
-      //   setState(() {
-      //     // viajes.payload?[indexFind] = response;
-      //     viajes.payload = List.from(viajes.payload ?? [])..[indexFind] = response;
-      //   });
-      // }
-      // viajes.payload.map((x) => debugPrint("${x.id} ${x.estado}"))
     }
   }
 
@@ -372,11 +364,17 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   }
 
   void notificarEnRuta(Ubicaciones ubicacion) {
-    viajeController.utils.sendList(getDestinatarios(ubicacion), "Mi nombre es $conductor de Transportes Everest, voy en camino.");
+    List<String> recipients = getDestinatarios(ubicacion);
+    if (recipients.isNotEmpty) {
+      viajeController.utils.sendList(recipients, "Mi nombre es $conductor de Transportes Everest, voy en camino.");
+    }
   }
 
   void notificarEsperando(Ubicaciones ubicacion) {
-    viajeController.utils.sendList(getDestinatarios(ubicacion), "He llegdo y me encuentro esperando por usted.");
+    List<String> recipients = getDestinatarios(ubicacion);
+    if (recipients.isNotEmpty) {
+      viajeController.utils.sendList(recipients, "He llegdo y me encuentro esperando por usted.");
+    }
   }
 
   List<String> getDestinatarios(Ubicaciones ubicacion) {
