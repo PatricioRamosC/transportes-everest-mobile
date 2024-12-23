@@ -4,8 +4,6 @@ import 'package:transportes_everest_mobile/providers/screens_provider.dart';
 import 'package:transportes_everest_mobile/providers/session_provider.dart';
 import 'package:transportes_everest_mobile/screens/everest.dart';
 import 'package:transportes_everest_mobile/screens/login.dart';
-// import 'package:transportes_everest_mobile/screens/vale2.dart';
-// import 'package:transportes_everest_mobile/screens/viaje3.dart';
 import 'package:transportes_everest_mobile/screens/viaje_en_curso.dart';
 import 'package:transportes_everest_mobile/utils/theme.dart';
 
@@ -29,25 +27,6 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-/*     ColorScheme colorScheme = ColorScheme(
-      // Definir colores primarios y secundarios
-      primary: Colors.black54, // Color para los botones y el icono.
-      primaryContainer: Colors.blue.shade700,
-      secondary: Colors.green,
-      secondaryContainer: Colors.green.shade700,
-      // Colores para los botones.
-
-      // Definir colores para diferentes partes de la interfaz de usuario
-      surface: Colors.white,
-      error: Colors.red,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onSurface: Colors.black,
-      onError: Colors.white,
-      // Opcional: definir un brillo para los colores claros y oscuros
-      brightness: Brightness.light,
-    );
- */
     TextTheme textTheme = const TextTheme(
       // Definir estilos de texto para diferentes encabezados
       displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -74,28 +53,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Transportes Everest',
       theme: materialTheme.lightHighContrast(),
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(
-      //     seedColor: Colors.red,
-      //   ),
-      // ),
       navigatorKey: navigatorKey,
       home: LoginPage(navigatorKey: navigatorKey),
       onGenerateRoute: generateRoute,
-      //home: const MyHomePage(title: 'Transportes Everest'),
       initialRoute: '/',
-      //initialRoute: '/login',
-      /*
-      routes: {
-        // '/login': (context) => LoginPage(navigatorKey: navigatorKey),
-        '/menu': (context) => Everest(navigatorKey: navigatorKey),
-        '/vale': (context) => Vale2(
-              navigatorKey: navigatorKey,
-            ),
-        // '/details': (context) => DetailsScreen(),
-      },
-      */
-      // Pantalla inicial
     );
   }
 

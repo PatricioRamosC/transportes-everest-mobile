@@ -255,7 +255,6 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
       debugPrint("DEBUG: Se generó un error al momento de mostrar el viaje ${item.id}");
       debugPrint(e.toString());
       debugPrint(stackTrace.toString());
-      // viajeController.utils.toastError(e.toString());     
       return const Expanded(child: Text('Sin información.'));
     }
   }
@@ -366,14 +365,14 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   void notificarEnRuta(Ubicaciones ubicacion) {
     List<String> recipients = getDestinatarios(ubicacion);
     if (recipients.isNotEmpty) {
-      viajeController.utils.sendList(recipients, "Mi nombre es $conductor de Transportes Everest, voy en camino.");
+      viajeController.utils.sendList(recipients, "Hola, mi nombre es $conductor de Transportes Everest, voy en camino.");
     }
   }
 
   void notificarEsperando(Ubicaciones ubicacion) {
     List<String> recipients = getDestinatarios(ubicacion);
     if (recipients.isNotEmpty) {
-      viajeController.utils.sendList(recipients, "He llegdo y me encuentro esperando por usted.");
+      viajeController.utils.sendList(recipients, "He llegado y me encuentro esperando por usted.");
     }
   }
 
@@ -405,23 +404,13 @@ class _ViajeEnCursoState extends State<ViajeEnCurso> with WidgetsBindingObserver
   }
 
   int getPasajeros(RevisionViajesPayload item) {
-    bool flag = false;
-    List<Pasajeros> usuarios = List.empty(growable: true);
+    Set<int> idsUnicos = {};
     item.ubicaciones?.forEach((ubicacion) {
       ubicacion.pasajeros?.forEach((pasajero) {
-        flag = false;
-        for (var usuario in usuarios) {
-          if (pasajero.userId == usuario.id) {
-            flag = true;
-            break;
-          }
-        }
-        if (!flag) {
-          usuarios.add(pasajero);
-        }
+        idsUnicos.add(pasajero.userId ?? 0);
       });
     });
-    return usuarios.length;
+    return idsUnicos.length;
   }
 
   void showObservacionesDialog(BuildContext context, String observaciones) {

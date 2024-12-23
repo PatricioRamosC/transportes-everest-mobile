@@ -217,11 +217,17 @@ class ViajeController extends BaseController {
         debugPrint(jsonEncode(response!.data));
         debugPrint('DEBUG: response del createLink recibido.');
         if (response.data.containsKey("payload")) {
-          String phone;
           EnlaceResponse enlaceResponse = EnlaceResponse.fromMap(response.data['payload']);
-          phone = utils.phoneFormatted(enlaceResponse.phone ?? '');
+          List<String> phones = List.empty(growable: true);
+          (enlaceResponse.phone ?? '').split(";").forEach((phone) {
+            phones.add(utils.phoneFormatted(phone));
+          });
           utils.toastInfo(enlaceResponse.message ?? '');
-          utils.send(phone, enlaceResponse.messageUser ?? '');
+          if (phones.isNotEmpty) {
+            utils.sendList(phones, enlaceResponse.messageUser ?? '');
+          } else {
+            utils.toastError("No hay teléfonos definidos para enviar el SMS para firmar el viaje.");
+          }
           return true;
         }
       } else {
