@@ -1,0 +1,9 @@
+afterEvaluate {
+    println "========================================="
+    println "FLUTTER VARIABLES DEBUG:"
+    println "compileSdkVersion: " + (project.hasProperty('flutter') ? flutter.compileSdkVersion : "NOT DEFINED")
+    println "minSdkVersion: " + (project.hasProperty('flutter') ? flutter.minSdkVersion : "NOT DEFINED") 
+    println "targetSdkVersion: " + (project.hasProperty('flutter') ? flutter.targetSdkVersion : "NOT DEFINED")
+    println "ndkVersion: " + (project.hasProperty('flutter') ? flutter.ndkVersion : "NOT DEFINED")
+    println "========================================="
+}
