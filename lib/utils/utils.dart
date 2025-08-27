@@ -164,7 +164,9 @@ class Utils {
     bool canSend = await canSendSMS();
     if (canSend && await checkSmsPermission()) {
       String result =
-          await sendSMS(message: msg, recipients: recipents, sendDirect: true)
+          await sendSMS(message: msg, recipients: recipents
+                      //, sendDirect: true
+                      )
               .catchError((onError) {
         debugPrint(onError.toString());
         toastError(onError.toString());
