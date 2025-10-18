@@ -1,7 +1,6 @@
 class UrlConstants {
-  // static const String baseUrl = "https://api.transporteseverest.cl";
-  // static const String baseUrl = "https://192.168.1.12";
-  static const String baseUrl = "https://10.164.16.247";
+  static const String baseUrl = "https://api.transporteseverest.cl";
+  // static const String baseUrl = "https://192.168.100.10";
   static const String loginUrl = "/api/v1/auth/login";
   static const String menuItemUrl = "/api/v1/auth/options";
   // static const String menuItemUrl = "/api/v1/menu-items";

@@ -14,6 +14,7 @@ import '../entidades/viaje.dart';
 
 class ViajeController extends BaseController {
   ViajeController({required super.navigatorKey});
+
   ///
   /// Propósito: Viajes pendientes para ser atendidos por el conductor.
   ///
@@ -171,7 +172,7 @@ class ViajeController extends BaseController {
           "${UrlConstants.viajesPasajeroUrl}/$id", null, null);
 
       if (response?.statusCode == 200) {
-          return RevisionViajesPayload.fromJson(response?.data);
+        return RevisionViajesPayload.fromJson(response?.data);
       } else {
         utils.toastErrorJson(response?.data ?? '');
       }
@@ -196,7 +197,7 @@ class ViajeController extends BaseController {
           "${UrlConstants.viajesUbicacionUrl}/$id", data, null);
 
       if (response?.statusCode == 200) {
-          return RevisionViajesPayload.fromJson(response?.data);
+        return RevisionViajesPayload.fromJson(response?.data);
       } else {
         utils.toastErrorJson(response?.data ?? '');
       }
@@ -209,15 +210,16 @@ class ViajeController extends BaseController {
 
   Future<bool?> createLink(EnlaceRequest item) async {
     try {
-      Response? response = await apiService.post(
-          UrlConstants.enlaceUrl, item.toJson(), null);
+      Response? response =
+          await apiService.post(UrlConstants.enlaceUrl, item.toJson(), null);
 
       if (response?.statusCode == 200) {
         debugPrint('DEBUG: recibiendo el response del createLink...');
         debugPrint(jsonEncode(response!.data));
         debugPrint('DEBUG: response del createLink recibido.');
         if (response.data.containsKey("payload")) {
-          EnlaceResponse enlaceResponse = EnlaceResponse.fromMap(response.data['payload']);
+          EnlaceResponse enlaceResponse =
+              EnlaceResponse.fromMap(response.data['payload']);
           List<String> phones = List.empty(growable: true);
           (enlaceResponse.phone ?? '').split(";").forEach((phone) {
             phones.add(utils.phoneFormatted(phone));
@@ -226,7 +228,8 @@ class ViajeController extends BaseController {
           if (phones.isNotEmpty) {
             utils.sendList(phones, enlaceResponse.messageUser ?? '');
           } else {
-            utils.toastError("No hay teléfonos definidos para enviar el SMS para firmar el viaje.");
+            utils.toastError(
+                "No hay teléfonos definidos para enviar el SMS para firmar el viaje.");
           }
           return true;
         }
@@ -263,8 +266,8 @@ class ViajeController extends BaseController {
   Future<ListadoRevisionViajes?> getViajesV2() async {
     try {
       int conductor = await apiService.getIntStorage("userID");
-      Response? response = await apiService.get(
-          "${UrlConstants.viajesV2Url}/$conductor", null);
+      Response? response =
+          await apiService.get("${UrlConstants.viajesV2Url}/$conductor", null);
 
       debug('obtenerViajes statusCode ${response?.statusCode}');
       if (response?.statusCode == 200) {
@@ -286,7 +289,7 @@ class ViajeController extends BaseController {
     return ListadoRevisionViajes();
   }
 
-  void setWaiting(Ubicaciones ubicacion) async {
+  Future<Espera> setWaiting(Ubicaciones ubicacion) async {
     try {
       LocationData? location = await utils.getLocation();
       Map<String, dynamic> data = {
@@ -294,13 +297,15 @@ class ViajeController extends BaseController {
         'latitud': location?.latitude ?? 0.0,
         'longitud': location?.longitude ?? 0.0
       };
-      
-      Response? response = await apiService.post(UrlConstants.viajesEsperandoUrl, data, null);
+
+      Response? response =
+          await apiService.post(UrlConstants.viajesEsperandoUrl, data, null);
       debug('setWaiting statusCode ${response?.statusCode}');
       if (response?.statusCode == 200) {
         try {
           if (response?.data != null) {
             debugPrint(jsonEncode(response?.data));
+            return Espera.fromJson(response?.data);
           }
         } catch (e, stackTrace) {
           debug(stackTrace.toString());
@@ -315,6 +320,6 @@ class ViajeController extends BaseController {
       debug(stackTrace.toString());
       utils.toastError(e.toString());
     }
+    return Espera();
   }
-
 }

@@ -50,15 +50,15 @@ class _ValeState extends State<Vale> {
             ],
           ),
           body: Center(
-            child: 
-            // isLoading
-            //     ? const CircularProgressIndicator()
-            //     : 
+            child:
+                // isLoading
+                //     ? const CircularProgressIndicator()
+                //     :
                 TabBarView(children: [
-                    getViajes(viajesPendientes, Constants.pendiente),
-                    getViajes(viajesEnCurso, Constants.enProceso),
-                    getViajes(viajesPorFirmar, Constants.finalizado)
-                  ]),
+              getViajes(viajesPendientes, Constants.pendiente),
+              getViajes(viajesEnCurso, Constants.enProceso),
+              getViajes(viajesPorFirmar, Constants.finalizado)
+            ]),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -308,14 +308,6 @@ class _ValeState extends State<Vale> {
       ViajesPendientes? viajes2 = ViajesPendientes();
       ViajesPendientes? viajes3 = ViajesPendientes();
 
-      // print('Consultando obtenerViajesPendientes...');
-      // viajes1 = await viajeController.obtenerViajesPendientes();
-      // print('Consultando obtenerViajesEnProceso...');
-      // viajes2 = await viajeController.obtenerViajesEnProceso();
-      // print('Consultando obtenerViajesPorFirmar...');
-      // viajes3 = await viajeController.obtenerViajesPorFirmar();
-      // print('Informacion retornada.');
-
       print('Fijando el estado de las variables...');
       setState(() {
         viajesPendientes = (viajes1 ?? ViajesPendientes());
@@ -333,5 +325,4 @@ class _ValeState extends State<Vale> {
   void print(String msg) {
     debugPrint("DEBUG: $msg");
   }
-
 }

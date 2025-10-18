@@ -6,7 +6,6 @@ import '../usuario.dart';
 import '../comuna.dart';
 // import '../region.dart';
 
-
 class ListadoRevisionViajes {
   String? message;
   int? errorCode;
@@ -28,8 +27,8 @@ class ListadoRevisionViajes {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'message' : message,
-      'error_code' : errorCode,
+      'message': message,
+      'error_code': errorCode,
       'payload': payload?.map((v) => v.toJson()).toList()
     };
     return data;
@@ -62,6 +61,7 @@ class RevisionViajesPayload {
   Usuario? conductor;
   List<Ubicaciones>? ubicaciones;
   Convenio? convenio;
+  MedioPago? medioPago;
 
   RevisionViajesPayload(
       {this.id,
@@ -87,7 +87,9 @@ class RevisionViajesPayload {
       this.convenioId,
       this.tarifa,
       this.conductor,
-      this.ubicaciones});
+      this.ubicaciones,
+      this.convenio,
+      this.medioPago});
 
   RevisionViajesPayload.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -112,11 +114,12 @@ class RevisionViajesPayload {
     centroCosto = json['centro_costo'];
     convenioId = json['convenio_id'];
     tarifa = json['tarifa'];
-    conductor = json['conductor'] != null
-        ? Usuario.fromMap(json['conductor'])
-        : null;
-    convenio = json['convenio'] != null
-        ? Convenio.fromJson(json['convenio'])
+    conductor =
+        json['conductor'] != null ? Usuario.fromMap(json['conductor']) : null;
+    convenio =
+        json['convenio'] != null ? Convenio.fromJson(json['convenio']) : null;
+    medioPago = json['medio_pago'] != null
+        ? MedioPago.fromJson(json['medio_pago'])
         : null;
     if (json['ubicaciones'] != null) {
       ubicaciones = List.empty(growable: true);
@@ -128,35 +131,36 @@ class RevisionViajesPayload {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'id' : id,
-      'id_conductor' : idConductor,
-      'fecha_hora_solicitud' : fechaHoraSolicitud,
-      'fecha_hora_inicio' : fechaHoraInicio,
-      'fecha_hora_fin' : fechaHoraFin,
-      'origen_latitud' : origenLatitud,
-      'origen_longitud' : origenLongitud,
-      'destino_latitud' : destinoLatitud,
-      'destino_longitud' : destinoLongitud,
-      'distancia' : distancia,
-      'costo_total' : costoTotal,
-      'metodo_pago' : metodoPago,
-      'calificacion_conductor' : calificacionConductor,
-      'calificacion_cliente' : calificacionCliente,
-      'comentarios' : comentarios,
-      'created_at' : createdAt,
-      'updated_at' : updatedAt,
-      'estado' : estado,
-      'tipo_convenio' : tipoConvenio,
-      'centro_costo' : centroCosto,
-      'convenio_id' : convenioId,
-      'tarifa' : tarifa,
-      'conductor' : conductor?.toJson(),
-      'ubicaciones' : ubicaciones?.map((v) => v.toJson()).toList(),
+      'id': id,
+      'id_conductor': idConductor,
+      'fecha_hora_solicitud': fechaHoraSolicitud,
+      'fecha_hora_inicio': fechaHoraInicio,
+      'fecha_hora_fin': fechaHoraFin,
+      'origen_latitud': origenLatitud,
+      'origen_longitud': origenLongitud,
+      'destino_latitud': destinoLatitud,
+      'destino_longitud': destinoLongitud,
+      'distancia': distancia,
+      'costo_total': costoTotal,
+      'metodo_pago': metodoPago,
+      'calificacion_conductor': calificacionConductor,
+      'calificacion_cliente': calificacionCliente,
+      'comentarios': comentarios,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'estado': estado,
+      'tipo_convenio': tipoConvenio,
+      'centro_costo': centroCosto,
+      'convenio_id': convenioId,
+      'tarifa': tarifa,
+      'conductor': conductor?.toMap(),
+      'ubicaciones': ubicaciones?.map((v) => v.toJson()).toList(),
+      'convenio': convenio?.toJson(),
+      'medio_pago': medioPago?.toJson(),
     };
     return data;
   }
 }
-
 
 class Ubicaciones {
   int? id;
@@ -173,6 +177,7 @@ class Ubicaciones {
   String? estado;
   List<Pasajeros>? pasajeros;
   Comuna? comuna;
+  List<Espera>? esperas;
 
   Ubicaciones(
       {this.id,
@@ -188,7 +193,8 @@ class Ubicaciones {
       this.updatedAt,
       this.estado,
       this.pasajeros,
-      this.comuna});
+      this.comuna,
+      this.esperas});
 
   Ubicaciones.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -209,26 +215,32 @@ class Ubicaciones {
         pasajeros?.add(Pasajeros.fromJson(v));
       });
     }
-    comuna =
-        json['comuna'] != null ? Comuna.fromMap(json['comuna']) : null;
+    comuna = json['comuna'] != null ? Comuna.fromMap(json['comuna']) : null;
+    if (json['esperas'] != null) {
+      esperas = List.empty(growable: true);
+      json['esperas'].forEach((v) {
+        esperas?.add(Espera.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'id' : id,
-      'id_viaje' : idViaje,
-      'direccion' : direccion,
-      'referencia' : referencia,
-      'tipo' : tipo,
-      'id_comuna' : idComuna,
-      'latitud' : latitud,
-      'longitud' : longitud,
-      'orden' : orden,
-      'created_at' : createdAt,
-      'updated_at' : updatedAt,
-      'estado' : estado,
-      'pasajeros' : pasajeros?.map((v) => v.toJson()).toList(),
-      'comuna' : comuna?.toJson(),
+      'id': id,
+      'id_viaje': idViaje,
+      'direccion': direccion,
+      'referencia': referencia,
+      'tipo': tipo,
+      'id_comuna': idComuna,
+      'latitud': latitud,
+      'longitud': longitud,
+      'orden': orden,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'estado': estado,
+      'pasajeros': pasajeros?.map((v) => v.toJson()).toList(),
+      'comuna': comuna?.toJson(),
+      'esperas': esperas?.map((v) => v.toJson()).toList(),
     };
     return data;
   }
@@ -245,7 +257,16 @@ class Pasajeros {
   String? accion;
   Usuario? user;
 
-  Pasajeros({this.id, this.viajeId, this.userId, this.ubicacionId, this.estado, this.createdAt, this.updatedAt, this.user, this.accion});
+  Pasajeros(
+      {this.id,
+      this.viajeId,
+      this.userId,
+      this.ubicacionId,
+      this.estado,
+      this.createdAt,
+      this.updatedAt,
+      this.user,
+      this.accion});
 
   Pasajeros.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -261,19 +282,64 @@ class Pasajeros {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'id' : id,
-      'id_viaje' : viajeId,
-      'user_id' : userId,
-      'ubicacion_id' : ubicacionId,
-      'estado' : estado,
-      'accion' : accion,
-      'created_at' : createdAt,
-      'updated_at' : updatedAt,
-      'user' : user?.toJson()
+      'id': id,
+      'id_viaje': viajeId,
+      'user_id': userId,
+      'ubicacion_id': ubicacionId,
+      'estado': estado,
+      'accion': accion,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'user': user?.toJson()
     };
     return data;
   }
+}
 
+class Espera {
+  int? id;
+  int? ubicacionId;
+  String? inicio;
+  String? fin;
+  String? createdAt;
+  String? updatedAt;
+  double? latitud;
+  double? longitud;
+
+  Espera({
+    this.id,
+    this.ubicacionId,
+    this.inicio,
+    this.fin,
+    this.createdAt,
+    this.updatedAt,
+    this.latitud,
+    this.longitud,
+  });
+
+  Espera.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    ubicacionId = json['ubicacion_id'];
+    inicio = json['inicio'];
+    fin = json['fin'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    latitud = (json['latitud'] != null) ? json['latitud'].toDouble() : null;
+    longitud = (json['longitud'] != null) ? json['longitud'].toDouble() : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'ubicacion_id': ubicacionId,
+      'inicio': inicio,
+      'fin': fin,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'latitud': latitud,
+      'longitud': longitud,
+    };
+  }
 }
 
 class Convenio {
@@ -281,32 +347,84 @@ class Convenio {
   String? convenio;
   String? razonSocial;
   String? rut;
+  int? administradorId;
+  int? cicloFacturacion;
+  int? diaFacturacion;
+  int? plazoPago;
   String? createdAt;
   String? updatedAt;
 
-  Convenio({this.id, this.convenio, this.razonSocial, this.rut, this.createdAt, this.updatedAt});
+  Convenio({
+    this.id,
+    this.convenio,
+    this.razonSocial,
+    this.rut,
+    this.administradorId,
+    this.cicloFacturacion,
+    this.diaFacturacion,
+    this.plazoPago,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Convenio.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     convenio = json['convenio'];
-    razonSocial = json['razonSocial'];
+    razonSocial =
+        json['razon_social']; // ← Corregido de 'razonSocial' a 'razon_social'
     rut = json['rut'];
+    administradorId = json['administrador_id'];
+    cicloFacturacion = json['ciclo_facturacion'];
+    diaFacturacion = json['dia_facturacion'];
+    plazoPago = json['plazo_pago'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    // user = json['user'] != null ? Usuario.fromMap(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'id' : id,
-      'convenio' : convenio,
-      'razonSocial' : razonSocial,
-      'rut' : rut,
-      'created_at' : createdAt,
-      'updated_at' : updatedAt
-      // 'user' : user?.toJson()
+      'id': id,
+      'convenio': convenio,
+      'razon_social': razonSocial, // ← Corregido para coincidir con el JSON
+      'rut': rut,
+      'administrador_id': administradorId,
+      'ciclo_facturacion': cicloFacturacion,
+      'dia_facturacion': diaFacturacion,
+      'plazo_pago': plazoPago,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
     return data;
   }
-  
+}
+
+class MedioPago {
+  int? id;
+  String? medioPago;
+  String? createdAt;
+  String? updatedAt;
+
+  MedioPago({
+    this.id,
+    this.medioPago,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  MedioPago.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    medioPago = json['medio_pago'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'id': id,
+      'medio_pago': medioPago,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+    return data;
+  }
 }

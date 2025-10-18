@@ -14,6 +14,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import "package:transportes_everest_mobile/config/constants.dart";
 import "package:url_launcher/url_launcher.dart";
+import 'package:flutter/foundation.dart';
 
 class Utils {
   // late BuildContext _context;
@@ -163,23 +164,28 @@ class Utils {
     debugPrint("Enviando SMS...");
     bool canSend = await canSendSMS();
     if (canSend && await checkSmsPermission()) {
+      // if (kDebugMode) {
+      //   debugPrint("debugMode SMS a enviar a ${recipents.join(", ")}");
+      //   return Future<String>.value("OK");
       String result =
-          await sendSMS(message: msg, recipients: recipents
-                      //, sendDirect: true
-                      )
+          await sendSMS(message: msg, recipients: recipents, sendDirect: true)
               .catchError((onError) {
         debugPrint(onError.toString());
         toastError(onError.toString());
         return "${Constants.mensajeErrorSendSMS} : ${onError.toString()}";
       });
       return result;
+      // } else {
+      //   debugPrint("releaseMode SMS a enviar a ${recipents.join(", ")}");
+      //   return Future<String>.value("OK");
+      // }
     } else {
+      debugPrint("No se puede enviar SMS");
       return null;
     }
   }
 
   Future<bool> checkSmsPermission() async {
-
     var status = (await Permission.sms.status);
     if (status.isDenied) {
       status = await Permission.sms.request();
@@ -361,9 +367,8 @@ class Utils {
 
   String formatNumber(int value, decimalDigits, String symbol) {
     String valor = NumberFormat.currency(
-      decimalDigits: decimalDigits, 
-      locale: 'es_CL', 
-      symbol: '').format(value);
+            decimalDigits: decimalDigits, locale: 'es_CL', symbol: '')
+        .format(value);
     return "$symbol $valor";
   }
 

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:transportes_everest_mobile/controllers/everest_controller.dart';
@@ -75,7 +74,7 @@ class _EverestState extends State<Everest> {
                 }
               })),
       body: const Center(
-        child: Text('Versión Beta 1.4.3'),
+        child: Text('Versión Beta 2.0.3'),
       ),
     );
   }
